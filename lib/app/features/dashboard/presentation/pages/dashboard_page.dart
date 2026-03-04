@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/config/routes/route_path.dart';
 import '../../../../core/config/theme/app_colors.dart';
 import '../widgets/adherence_card.dart';
 import '../widgets/medicine_card.dart';
@@ -126,7 +128,7 @@ class DashboardPage extends StatelessWidget {
               height: 72,
               child: OutlinedButton.icon(
                 onPressed: () {
-                  // TODO: add medicine
+                  context.push(AppPage.addMedicine.toPath);
                 },
                 icon: Icon(
                   Icons.add_circle_outline,

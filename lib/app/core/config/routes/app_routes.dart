@@ -5,6 +5,7 @@ import '../../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../../features/auth/presentation/pages/login_page.dart';
 import '../../../features/auth/presentation/pages/register_page.dart';
 import '../../../features/dashboard/presentation/pages/dashboard_page.dart';
+import '../../../features/medicine/presentation/pages/add_medicine_page.dart';
 import '../../../features/profile/presentation/pages/profile_page.dart';
 import '../../../features/settings/presentation/pages/settings_page.dart';
 import '../../../shared/widgets/organisms/page_not_found.dart';
@@ -27,6 +28,11 @@ class AppRouter {
     navigatorKey: rootNavigatorKey,
     routes: <GoRoute>[
       GoRoute(
+        path: AppPage.addMedicine.toPath,
+        name: AppPage.addMedicine.toName,
+        builder: (context, state) => const AddMedicinePage(),
+      ),
+        GoRoute(
         path: AppPage.home.toPath,
         name: AppPage.home.toName,
         builder: (context, state) => const DashboardPage(),
