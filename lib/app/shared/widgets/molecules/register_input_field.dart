@@ -14,22 +14,31 @@ class RegisterInputField extends StatelessWidget with AuthValidator {
     return FormBuilder(
       key: formKey,
       child: Column(
-        spacing: 10,
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           AppFormField(
             name: "full_name",
+            label: "Full Name",
             hintText: "Enter your full name",
+            keyboardType: TextInputType.name,
+            textInputAction: TextInputAction.next,
             validator: fullNameValidator,
           ),
+          const SizedBox(height: 16),
           AppFormField(
             name: "email",
-            hintText: "Enter email address",
+            label: "Email Address",
+            hintText: "name@example.com",
+            keyboardType: TextInputType.emailAddress,
+            textInputAction: TextInputAction.next,
             validator: emailValidator,
           ),
+          const SizedBox(height: 16),
           AppFormField(
             name: "password",
-            hintText: "Enter password",
+            label: "Password",
+            hintText: "Create a password",
+            obscureText: true,
+            textInputAction: TextInputAction.done,
             validator: passwordValidator,
           ),
         ],
