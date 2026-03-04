@@ -1,4 +1,4 @@
-enum AppPage { home, login, register, settings, profile, addMedicine }
+enum AppPage { home, login, register, settings, profile, addMedicine, history }
 
 extension AppPageExtension on AppPage {
   String get toPath {
@@ -14,8 +14,9 @@ extension AppPageExtension on AppPage {
       case AppPage.profile:
         return '/profile';
       case AppPage.addMedicine:
-       return '/add-medicine';
-      
+        return '/add-medicine';
+      case AppPage.history:
+        return '/history';
     }
   }
 
@@ -32,7 +33,9 @@ extension AppPageExtension on AppPage {
       case AppPage.profile:
         return "Profile";
       case AppPage.addMedicine:
-       return "Add-medicine";
+        return "Add Medicine";
+      case AppPage.history:
+        return "History";
     }
   }
 }

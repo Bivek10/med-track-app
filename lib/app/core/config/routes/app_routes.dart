@@ -5,6 +5,7 @@ import '../../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../../features/auth/presentation/pages/login_page.dart';
 import '../../../features/auth/presentation/pages/register_page.dart';
 import '../../../features/dashboard/presentation/pages/dashboard_page.dart';
+import '../../../features/history/presentation/pages/history_page.dart';
 import '../../../features/medicine/presentation/pages/add_medicine_page.dart';
 import '../../../features/profile/presentation/pages/profile_page.dart';
 import '../../../features/settings/presentation/pages/settings_page.dart';
@@ -63,6 +64,11 @@ class AppRouter {
         path: AppPage.profile.toPath,
         name: AppPage.profile.toName,
         builder: (context, state) => const ProfilePage(),
+      ),
+      GoRoute(
+        path: AppPage.history.toPath,
+        name: AppPage.history.toName,
+        builder: (context, state) => const HistoryPage(),
       ),
     ],
     errorBuilder: (context, state) => const PageNotFoundView(),
