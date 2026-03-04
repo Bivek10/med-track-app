@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../../features/auth/presentation/pages/login_page.dart';
 import '../../../features/auth/presentation/pages/register_page.dart';
+import '../../../features/profile/presentation/pages/profile_page.dart';
+import '../../../features/settings/presentation/pages/settings_page.dart';
 import '../../../shared/widgets/organisms/page_not_found.dart';
 import '../../utils/extension/bloc_extension.dart';
 import 'route_path.dart';
@@ -23,7 +25,6 @@ class AppRouter {
     refreshListenable: authBloc.asListenable(),
     navigatorKey: rootNavigatorKey,
     routes: <GoRoute>[
-    
       GoRoute(
         path: AppPage.login.toPath,
         name: AppPage.login.toName,
@@ -40,6 +41,16 @@ class AppRouter {
         path: AppPage.register.toPath,
         name: AppPage.register.toName,
         builder: (context, state) => const RegisterPage(),
+      ),
+      GoRoute(
+        path: AppPage.settings.toPath,
+        name: AppPage.settings.toName,
+        builder: (context, state) => const SettingsPage(),
+      ),
+      GoRoute(
+        path: AppPage.profile.toPath,
+        name: AppPage.profile.toName,
+        builder: (context, state) => const ProfilePage(),
       ),
     ],
     errorBuilder: (context, state) => const PageNotFoundView(),
