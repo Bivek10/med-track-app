@@ -15,9 +15,7 @@ import 'features/auth/data/repository/auth_repository_impl.dart';
 import 'features/auth/domain/repository/auth_repository.dart';
 import 'features/auth/domain/usecases/auth_usecase.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
-import 'features/home/data/datasources/product_api_service.dart';
-import 'features/home/domain/repository/product_repository.dart';
-import 'features/home/domain/usecases/product_usecase.dart';
+
 
 late SharedPreferences preferences;
 final inject = GetIt.instance;
@@ -82,9 +80,6 @@ void _registerServices() {
   inject
     ..registerLazySingleton<AuthApiService>(
       () => AuthApiServiceImpl(inject<DioService>()),
-    )
-    ..registerLazySingleton<ProductApiService>(
-      () => ProductApiServiceImpl(inject<DioService>()),
     );
 }
 
@@ -98,10 +93,8 @@ void _registerUseCases() {
   inject
     ..registerLazySingleton<AuthUsecase>(
       () => AuthUsecase(inject<AuthRepository>()),
-    )
-    ..registerLazySingleton<ProductUsecase>(
-      () => ProductUsecase(inject<ProductRepository>()),
     );
+ 
 }
 
 Future<void> _initLocalization() async {

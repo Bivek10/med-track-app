@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../../features/auth/presentation/pages/login_page.dart';
 import '../../../features/auth/presentation/pages/register_page.dart';
-import '../../../features/home/presentation/pages/home_page.dart';
 import '../../../shared/widgets/organisms/page_not_found.dart';
 import '../../utils/extension/bloc_extension.dart';
 import 'route_path.dart';
@@ -24,18 +23,7 @@ class AppRouter {
     refreshListenable: authBloc.asListenable(),
     navigatorKey: rootNavigatorKey,
     routes: <GoRoute>[
-      GoRoute(
-        path: AppPage.home.toPath,
-        name: AppPage.home.toName,
-        redirect: (context, state) {
-          final state = authBloc.state;
-          if (state is Unauthenticated) {
-            return AppPage.login.toPath;
-          }
-          return null;
-        },
-        builder: (context, state) => HomePage(),
-      ),
+    
       GoRoute(
         path: AppPage.login.toPath,
         name: AppPage.login.toName,
