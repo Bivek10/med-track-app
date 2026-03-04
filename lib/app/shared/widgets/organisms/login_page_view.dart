@@ -28,7 +28,7 @@ class _LoginPageViewState extends State<LoginPageView> {
   }
 
   void onSignInButtonPressed() {
-    context.push(AppPage.settings.toPath);
+    context.push(AppPage.home.toPath);
     // if (formKey.currentState!.saveAndValidate()) {
     //   context.read<AuthBloc>().add(AuthSignIn(userMap: formKey.formValue));
     // }
