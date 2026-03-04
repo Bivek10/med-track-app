@@ -34,7 +34,7 @@ class DashboardPage extends StatelessWidget {
               icon: const Icon(Icons.notifications_outlined, size: 24),
               color: AppColors.slate900,
               onPressed: () {
-                context.push(AppPage.reports.toPath);
+                context.push(AppPage.reminder.toPath);
                 // TODO: notifications
               },
             ),
