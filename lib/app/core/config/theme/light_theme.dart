@@ -14,6 +14,7 @@ import 'package:flutter/material.dart'
         DividerThemeData,
         ElevatedButtonThemeData,
         ExpansionTileThemeData,
+        FontWeight,
         IconThemeData,
         InputDecorationTheme,
         MaterialTapTargetSize,
@@ -40,7 +41,7 @@ import 'app_colors.dart';
 import 'typography.dart';
 
 base class LightTheme extends Typography {
-  LightTheme._():super(isDarkMode: false);
+  LightTheme._() : super(isDarkMode: false);
 
   static LightTheme get instance => LightTheme._();
 
@@ -50,19 +51,19 @@ base class LightTheme extends Typography {
       primarySwatch: AppColors.primary,
       brightness: Brightness.light,
       cardColor: AppColors.white,
+      fontFamily: Typography.fontFamily,
       colorScheme: ColorScheme(
         brightness: Brightness.light,
-        primary: AppColors.white,
-        onPrimary: AppColors.greyLighter,
+        primary: AppColors.primary,
+        onPrimary: AppColors.white,
         secondary: AppColors.greenAccent,
         onSecondary: AppColors.white,
-        error: AppColors.redPure,
-        onError: AppColors.redPure,
+        error: AppColors.error,
+        onError: AppColors.white,
         surface: AppColors.white,
-
-        onSurface: AppColors.greyLighter,
+        onSurface: AppColors.slate900,
       ),
-      scaffoldBackgroundColor: AppColors.primary.shade900,
+      scaffoldBackgroundColor: AppColors.backgroundLight,
       textTheme: TextTheme(
         displayLarge: super.displayLarge,
         displayMedium: super.displayMedium,
@@ -96,45 +97,59 @@ base class LightTheme extends Typography {
         }),
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(
-        color: AppColors.white,
+        color: AppColors.primary,
       ),
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         systemOverlayStyle: SystemUiOverlayStyle(
-          statusBarColor: AppColors.white,
+          statusBarColor: AppColors.backgroundLight,
           statusBarIconBrightness: Brightness.dark,
           statusBarBrightness: Brightness.light,
         ),
-        iconTheme: IconThemeData(color: Colors.white),
-        backgroundColor: AppColors.white,
-        titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),
+        iconTheme: IconThemeData(color: AppColors.slate900),
+        backgroundColor: AppColors.backgroundLight,
+        titleTextStyle: TextStyle(
+          fontFamily: Typography.fontFamily,
+          color: AppColors.slate900,
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
+        ),
         elevation: 0,
+        centerTitle: true,
       ),
       inputDecorationTheme: InputDecorationTheme(
-        contentPadding: EdgeInsets.only(top: 9, bottom: 9, right: 4),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         fillColor: AppColors.white,
         filled: true,
-        isDense: true,
+        isDense: false,
         border: OutlineInputBorder(
-          borderSide: const BorderSide(color: AppColors.greyLight, width: 1),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.slate200, width: 1),
         ),
-        focusedBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: AppColors.primary, width: 1),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.primary, width: 2),
         ),
-        enabledBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: AppColors.greyLight, width: 1),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.slate200, width: 1),
         ),
-        disabledBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: AppColors.greyLight, width: 1),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.slate200, width: 1),
         ),
-        errorBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: AppColors.errorBorder, width: 1),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.errorBorder, width: 1),
         ),
-        focusedErrorBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: AppColors.errorBorder, width: 1.5),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide:
+              const BorderSide(color: AppColors.errorBorder, width: 1.5),
         ),
-        labelStyle: bodySmall.copyWith(color: AppColors.greyLighter),
+        labelStyle: bodySmall.copyWith(color: AppColors.slate400),
         errorStyle: labelMedium.copyWith(color: AppColors.errorBorder),
-        hintStyle: bodySmall.copyWith(color: AppColors.greyLighter),
+        hintStyle: bodyMedium.copyWith(color: AppColors.slate400),
       ),
 
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -152,23 +167,33 @@ base class LightTheme extends Typography {
             }
             return AppColors.primary;
           }),
-          shape: WidgetStatePropertyAll(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(45)),
+          elevation: WidgetStatePropertyAll(4),
+          shadowColor: WidgetStatePropertyAll(
+            AppColors.primary.withValues(alpha: 0.3),
           ),
-          textStyle: WidgetStatePropertyAll(titleSmall.copyWith(fontWeight: FontWeight.w500)),
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          ),
+          textStyle: WidgetStatePropertyAll(
+            titleSmall.copyWith(fontWeight: FontWeight.w700),
+          ),
         ),
       ),
 
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: ButtonStyle(
           fixedSize: const WidgetStatePropertyAll(Size.fromHeight(56)),
-          foregroundColor: WidgetStatePropertyAll(AppColors.primary),
-          backgroundColor: WidgetStatePropertyAll(AppColors.primary.shade50),
-          side: WidgetStatePropertyAll(BorderSide(color: AppColors.primary)),
-          shape: WidgetStatePropertyAll(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(45)),
+          foregroundColor: WidgetStatePropertyAll(AppColors.slate900),
+          backgroundColor: WidgetStatePropertyAll(AppColors.white),
+          side: WidgetStatePropertyAll(
+            BorderSide(color: AppColors.slate200),
           ),
-          textStyle: WidgetStatePropertyAll(titleSmall.copyWith(fontWeight: FontWeight.w500)),
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          ),
+          textStyle: WidgetStatePropertyAll(
+            titleSmall.copyWith(fontWeight: FontWeight.w600),
+          ),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
@@ -178,21 +203,19 @@ base class LightTheme extends Typography {
         ),
       ),
 
-      // dialog theme
       dialogTheme: DialogThemeData(
         backgroundColor: AppColors.white,
         shadowColor: AppColors.lightBlack,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         insetPadding: EdgeInsets.symmetric(horizontal: 0),
       ),
 
-      //card theme
       cardTheme: CardThemeData(
         elevation: 0,
         color: AppColors.white,
         shape: RoundedRectangleBorder(
-          side: BorderSide(width: 1, color: AppColors.primary.shade600),
-          borderRadius: BorderRadius.circular(8),
+          side: BorderSide(width: 1, color: AppColors.slate200),
+          borderRadius: BorderRadius.circular(16),
         ),
       ),
       datePickerTheme: DatePickerThemeData(
@@ -209,12 +232,10 @@ base class LightTheme extends Typography {
           if (states.contains(WidgetState.disabled)) {
             return AppColors.textBlack.withValues(alpha: 0.3);
           }
-
           return AppColors.textBlack;
         }),
-
         todayBackgroundColor: WidgetStatePropertyAll<Color>(
-          AppColors.primary.shade700,
+          AppColors.primary,
         ),
         toggleButtonTextStyle: bodyLarge,
         todayForegroundColor: WidgetStatePropertyAll<Color>(Colors.white),
@@ -222,23 +243,19 @@ base class LightTheme extends Typography {
           if (states.contains(WidgetState.selected)) {
             return RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
-              side: BorderSide(color: AppColors.primary.shade900, width: 1),
+              side: BorderSide(color: AppColors.primary, width: 1),
             );
           }
           return null;
         }),
-
         rangeSelectionBackgroundColor: AppColors.primary,
       ),
 
       checkboxTheme: CheckboxThemeData(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
-        side: BorderSide(color: AppColors.borderColor, width: 1),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+        side: BorderSide(color: AppColors.slate300, width: 1),
         visualDensity: VisualDensity.compact,
         checkColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) {
-            return AppColors.white;
-          }
           return AppColors.white;
         }),
         fillColor: WidgetStateProperty.resolveWith((states) {
@@ -255,7 +272,7 @@ base class LightTheme extends Typography {
           if (states.contains(WidgetState.selected)) {
             return AppColors.primary;
           }
-          return AppColors.borderColor;
+          return AppColors.slate300;
         }),
         overlayColor: WidgetStateProperty.all(AppColors.primary),
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -266,8 +283,8 @@ base class LightTheme extends Typography {
         shape: Border(),
       ),
       dividerTheme: DividerThemeData(
-        color: AppColors.dividerColor50,
-        thickness: 3,
+        color: AppColors.slate200,
+        thickness: 1,
       ),
     );
   }

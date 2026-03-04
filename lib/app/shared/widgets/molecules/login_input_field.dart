@@ -16,15 +16,15 @@ class LoginInputField extends StatelessWidget with AuthValidator {
         spacing: 10,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          InputField(
+          AppFormField(
             name: "username",
-            hint: "Enter Username",
+            hintText: "Enter Username",
 
             // validator: emailValidator,
           ),
-          InputField(
+          AppFormField(
             name: "password",
-            hint: "Enter password",
+            hintText: "Enter password",
             validator: passwordValidator,
           ),
         ],

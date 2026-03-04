@@ -17,19 +17,19 @@ class RegisterInputField extends StatelessWidget with AuthValidator {
         spacing: 10,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          InputField(
+          AppFormField(
             name: "full_name",
-            hint: "Enter your full name",
+            hintText: "Enter your full name",
             validator: fullNameValidator,
           ),
-          InputField(
+          AppFormField(
             name: "email",
-            hint: "Enter email address",
+            hintText: "Enter email address",
             validator: emailValidator,
           ),
-          InputField(
+          AppFormField(
             name: "password",
-            hint: "Enter password",
+            hintText: "Enter password",
             validator: passwordValidator,
           ),
         ],
