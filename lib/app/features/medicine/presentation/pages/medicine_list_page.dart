@@ -32,7 +32,6 @@ class MedicineListPage extends StatelessWidget {
           ],
         ),
         actions: [
-         
           IconButton(
             icon: const Icon(Icons.settings, color: AppColors.slate500),
             onPressed: () {
@@ -266,7 +265,11 @@ class MedicineListPage extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.event_repeat, color: AppColors.error, size: 16.sp),
+                    Icon(
+                      Icons.event_repeat,
+                      color: AppColors.error,
+                      size: 16.sp,
+                    ),
                     SizedBox(width: 8.w),
                     Text(
                       nextDoseInfo,
@@ -369,7 +372,11 @@ class MedicineListPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Center(
-                    child: Icon(Icons.history, color: AppColors.slate500, size: 20.sp),
+                    child: Icon(
+                      Icons.history,
+                      color: AppColors.slate500,
+                      size: 20.sp,
+                    ),
                   ),
                 ),
                 SizedBox(width: 16.w),
@@ -415,7 +422,8 @@ class MedicineListPage extends StatelessWidget {
           border: Border.all(
             color: AppColors.primary.withOpacity(0.3),
             width: 2,
-            style: BorderStyle.solid, // Note: Flutter doesn't natively support dashed borders without custom painters/packages
+            style: BorderStyle
+                .solid, // Note: Flutter doesn't natively support dashed borders without custom painters/packages
           ),
           borderRadius: BorderRadius.circular(16.r),
         ),
@@ -428,9 +436,7 @@ class MedicineListPage extends StatelessWidget {
                 color: AppColors.primary[50],
                 shape: BoxShape.circle,
               ),
-              child: Center(
-                child: Icon(Icons.add, color: AppColors.primary),
-              ),
+              child: Center(child: Icon(Icons.add, color: AppColors.primary)),
             ),
             SizedBox(height: 8.h),
             Text(
