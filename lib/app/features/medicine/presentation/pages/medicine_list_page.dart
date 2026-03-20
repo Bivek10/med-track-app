@@ -32,13 +32,12 @@ class MedicineListPage extends StatelessWidget {
           ],
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications, color: AppColors.slate500),
-            onPressed: () {},
-          ),
+         
           IconButton(
             icon: const Icon(Icons.settings, color: AppColors.slate500),
-            onPressed: () {},
+            onPressed: () {
+              context.pushNamed(AppPage.reminder.toName);
+            },
           ),
           SizedBox(width: 8.w),
         ],
