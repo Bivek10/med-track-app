@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "183271736430",
+    "project_id": "med-track-566fd",
+    "storage_bucket": "med-track-566fd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:183271736430:android:21af9749adb2868eabd27f",
+        "android_client_info": {
+          "package_name": "com.medtrack.health"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArIl0lkxjPNc6hIsUlLXCGqasGRO-KNmQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
