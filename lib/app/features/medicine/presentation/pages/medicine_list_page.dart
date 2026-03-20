@@ -61,14 +61,14 @@ class MedicineListPage extends StatelessWidget {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push(AppPage.addMedicine.toPath),
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.white,
-        elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-        child: const Icon(Icons.add, size: 28),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () => context.pushNamed(AppPage.addMedicine.toName),
+      //   backgroundColor: AppColors.primary,
+      //   foregroundColor: AppColors.white,
+      //   elevation: 4,
+      //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+      //   child: const Icon(Icons.add, size: 28),
+      // ),
     );
   }
 
@@ -408,7 +408,7 @@ class MedicineListPage extends StatelessWidget {
 
   Widget _buildAddNewMedicineButton(BuildContext context) {
     return GestureDetector(
-      onTap: () => context.push(AppPage.addMedicine.toPath),
+      onTap: () => context.pushNamed(AppPage.addMedicine.toName),
       child: Container(
         width: double.infinity,
         padding: EdgeInsets.symmetric(vertical: 20.h),

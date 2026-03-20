@@ -7,6 +7,7 @@ import '../../../features/auth/presentation/pages/register_page.dart';
 import '../../../features/dashboard/presentation/pages/dashboard_page.dart';
 import '../../../features/history/presentation/pages/history_page.dart';
 import '../../../features/medicine/presentation/pages/add_medicine_page.dart';
+import '../../../features/medicine/presentation/pages/medicine_list_page.dart';
 import '../../../features/profile/presentation/pages/profile_page.dart';
 import '../../../features/reminder/presentation/pages/reminder_page.dart';
 import '../../../features/reports/presentation/pages/reports_page.dart';
@@ -48,9 +49,16 @@ class AppRouter {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: AppPage.addMedicine.toPath,
-                name: AppPage.addMedicine.toName,
-                builder: (context, state) => const AddMedicinePage(),
+                path: AppPage.medicineList.toPath,
+                name: AppPage.medicineList.toName,
+                builder: (context, state) => const MedicineListPage(),
+                routes: [
+                  GoRoute(
+                    path: 'add-medicine',
+                    name: AppPage.addMedicine.toName,
+                    builder: (context, state) => const AddMedicinePage(),
+                  ),
+                ],
               ),
             ],
           ),

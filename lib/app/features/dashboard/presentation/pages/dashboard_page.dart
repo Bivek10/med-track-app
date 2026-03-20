@@ -129,7 +129,7 @@ class DashboardPage extends StatelessWidget {
               height: 72,
               child: OutlinedButton.icon(
                 onPressed: () {
-                  context.push(AppPage.addMedicine.toPath);
+                  context.pushNamed(AppPage.addMedicine.toName);
                 },
                 icon: Icon(
                   Icons.add_circle_outline,
