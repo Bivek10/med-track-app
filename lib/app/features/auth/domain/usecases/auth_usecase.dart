@@ -19,6 +19,10 @@ class AuthUsecase {
     return authRepository.signIn(userMap);
   }
 
+  Future<Either<Failure, ApiResponse<UserEntity>>> callSignUp(JsonMap userMap) {
+    return authRepository.signUp(userMap);
+  }
+
   Future<Either<Failure, ApiResponse<RefreshEntity>>> callRefresh(
     JsonMap userMap,
   ) {

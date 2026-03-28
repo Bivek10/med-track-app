@@ -14,8 +14,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(this.authUsecase) : super(AuthInitial()) {
     on<AuthStatus>(_getProfile);
     on<AuthSignIn>(_signIn);
+    on<AuthSignUp>(_signUp);
     add(AuthStatus());
   }
+
+  Future<void> _signUp(AuthSignUp event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
+    final res = await authUsecase.callSignUp(event.userMap);
+    res.match(
+      (l) => emit(AuthFailure(l.message)),
+      (r) => emit(Authenticated(r.data)),
+    );
+  }
+
   Future<void> _getProfile(AuthStatus event, Emitter<AuthState> emit) async {
     final res = await authUsecase.callProfile();
     res.match(

@@ -1,15 +1,13 @@
 class UserEntity {
-  final String username;
   final String fullname;
   final String email;
-  final String gender;
+  final String role;
   final String profile;
 
   UserEntity({
-    required this.username,
     required this.fullname,
     required this.email,
-    required this.gender,
+    required this.role,
     required this.profile,
   });
 }

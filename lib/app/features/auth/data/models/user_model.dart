@@ -2,53 +2,65 @@ import '../../../../core/utils/typedf/index.dart';
 import '../../domain/entities/user_entity.dart';
 
 class UserM {
-  final int id;
-  final String username;
+  final int userId;
   final String email;
   final String firstName;
   final String lastName;
-  final String gender;
-  final String image;
+  final String? middleName;
+  final String? authProvider;
+  final String? profilePicture;
+  final String? role;
   final String? accessToken;
   final String? refreshToken;
 
   UserM({
-    required this.id,
-    required this.username,
+    required this.userId,
     required this.email,
     required this.firstName,
     required this.lastName,
-    required this.gender,
-    required this.image,
+    this.middleName,
+    this.authProvider,
+    this.profilePicture,
+    this.role,
     this.accessToken,
     this.refreshToken,
   });
 
   factory UserM.fromJson(JsonMap json) {
     return UserM(
-      id: json['id'] as int,
-      username: json['username'] as String,
+      userId: json['user_id'] as int,
       email: json['email'] as String,
-      firstName: json['firstName'] as String,
-      lastName: json['lastName'] as String,
-      gender: json['gender'] as String,
-      image: json['image'] as String,
-      accessToken: json['accessToken'] as String?,
-      refreshToken: json['refreshToken'] as String?,
+      firstName: json['first_name'] as String,
+      lastName: json['last_name'] as String,
+      middleName: json['middle_name'] as String?,
+      authProvider: json['auth_provider'] as String?,
+      profilePicture: json['profile_picture'] as String?,
+      role: json['role'] as String?,
+      accessToken: json['access_token'] as String?,
+      refreshToken: json['refresh_token'] as String?,
     );
   }
 
   JsonMap toJson() {
-    return {'username': username, 'password': email};
+    return {
+      'user_id': userId,
+      'email': email,
+      'first_name': firstName,
+      'last_name': lastName,
+      'middle_name': middleName,
+      'auth_provider': authProvider,
+      'role': role,
+      'access_token': accessToken,
+      'refresh_token': refreshToken,
+    };
   }
 
   UserEntity toEntity() {
     return UserEntity(
-      username: username,
+      fullname: '$firstName ${middleName ?? ""} $lastName'.trim(),
       email: email,
-      fullname: firstName + lastName,
-      gender: gender,
-      profile: image,
+      role: role ?? 'USER',
+      profile: profilePicture ?? '',
     );
   }
 }

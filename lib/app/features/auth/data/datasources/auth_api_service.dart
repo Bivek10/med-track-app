@@ -8,6 +8,7 @@ import '../models/user_model.dart';
 
 abstract class AuthApiService {
   Future<Either<Failure, ApiResponse<UserM>>> signIn(JsonMap userMap);
+  Future<Either<Failure, ApiResponse<UserM>>> signUp(JsonMap userMap);
   Future<Either<Failure, ApiResponse<UserM>>> getProfile();
   Future<Either<Failure, ApiResponse<RefreshEntity>>> refreshToken(
     JsonMap body,
@@ -24,7 +25,17 @@ class AuthApiServiceImpl implements AuthApiService {
     return _dioService.makeRequest<UserM, JsonMap>(
       type: RequestType.post,
       endpoint: ApiEndpoints.login,
-      fromJson: UserM.fromJson,
+      fromJson: (json) => UserM.fromJson(json['data'] as JsonMap),
+      data: userMap,
+    );
+  }
+
+  @override
+  Future<Either<Failure, ApiResponse<UserM>>> signUp(JsonMap userMap) async {
+    return _dioService.makeRequest<UserM, JsonMap>(
+      type: RequestType.post,
+      endpoint: ApiEndpoints.register,
+      fromJson: (json) => UserM.fromJson(json['data'] as JsonMap),
       data: userMap,
     );
   }
@@ -34,7 +45,7 @@ class AuthApiServiceImpl implements AuthApiService {
     return _dioService.makeRequest<UserM, JsonMap>(
       type: RequestType.get,
       endpoint: ApiEndpoints.profile,
-      fromJson: UserM.fromJson,
+      fromJson: (json) => UserM.fromJson(json['data'] as JsonMap),
     );
   }
 
