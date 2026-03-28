@@ -35,7 +35,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     final res = await authUsecase.callUpdateProfile(event.userMap);
     res.match(
-      (l) => emit(AuthFailure(l.message)),
+      (l) {
+        final currentState = state;
+        if (currentState is Authenticated) {
+          emit(Authenticated(currentState.user, error: l.message));
+        } else {
+          emit(AuthFailure(l.message));
+        }
+      },
       (r) {
         emit(Authenticated(r.data, message: "Profile updated successfully"));
       },

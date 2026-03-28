@@ -174,6 +174,13 @@ class _ProfilePageState extends State<ProfilePage> {
                       backgroundColor: Colors.green,
                     ),
                   );
+                } else if (state is Authenticated && state.error != null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(state.error!),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
                 } else if (state is AuthFailure) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -581,9 +588,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           final formattedWeight =
                                               weightStr.isEmpty
                                                   ? ""
-                                                  : weightStr.contains('kg')
-                                                      ? weightStr
-                                                      : "${weightStr}kg";
+                                                  : weightStr;
 
                                           context.read<AuthBloc>().add(
                                                 AuthUpdateProfile(

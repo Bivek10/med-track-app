@@ -22,9 +22,11 @@ final class Authenticated extends AuthState {
   final UserEntity user;
   final bool isUpdating;
   final String? message;
-  const Authenticated(this.user, {this.isUpdating = false, this.message});
+  final String? error;
+  const Authenticated(this.user,
+      {this.isUpdating = false, this.message, this.error});
   @override
-  List<Object> get props => [user, isUpdating, message ?? ''];
+  List<Object> get props => [user, isUpdating, message ?? '', error ?? ''];
 }
 
 final class Unauthenticated extends AuthState {
