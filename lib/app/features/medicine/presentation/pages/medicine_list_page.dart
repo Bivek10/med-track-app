@@ -159,10 +159,10 @@ class _MedicineListPageState extends State<MedicineListPage> {
                     } else {
                       return Column(
                         children: [
-                          if (medicines.isNotEmpty) ...[
-                            SizedBox(height: 24.h),
-                            _buildAddNewMedicineButton(context),
-                          ],
+                          // if (medicines.isNotEmpty) ...[
+                          //   SizedBox(height: 24.h),
+                          //   _buildAddNewMedicineButton(context),
+                          // ],
                           SizedBox(height: 80.h),
                         ],
                       );
