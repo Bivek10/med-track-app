@@ -1,8 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../../../../core/utils/typedf/index.dart';
+import '../../../../injector.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/usecases/auth_usecase.dart';
 
@@ -15,6 +17,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthStatus>(_getProfile);
     on<AuthSignIn>(_signIn);
     on<AuthSignUp>(_signUp);
+    on<AuthSignOut>(_signOut);
     add(AuthStatus());
   }
 
@@ -42,5 +45,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       (l) => emit(AuthFailure(l.message)),
       (r) => emit(Authenticated(r.data)),
     );
+  }
+
+  Future<void> _signOut(AuthSignOut event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
+    await inject<FlutterSecureStorage>().deleteAll();
+    emit(const Unauthenticated());
   }
 }

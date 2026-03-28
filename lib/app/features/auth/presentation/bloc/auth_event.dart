@@ -27,3 +27,9 @@ class AuthSignIn extends AuthEvent {
   @override
   List<Object> get props => [userMap];
 }
+
+class AuthSignOut extends AuthEvent {
+  const AuthSignOut();
+  @override
+  List<Object> get props => [];
+}
