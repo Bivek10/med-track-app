@@ -6,6 +6,7 @@ import '../../../features/auth/presentation/pages/login_page.dart';
 import '../../../features/auth/presentation/pages/register_page.dart';
 import '../../../features/dashboard/presentation/pages/dashboard_page.dart';
 import '../../../features/history/presentation/pages/history_page.dart';
+import '../../../features/medicine/domain/entities/medicine_entity.dart';
 import '../../../features/medicine/presentation/pages/add_medicine_page.dart';
 import '../../../features/medicine/presentation/pages/medicine_list_page.dart';
 import '../../../features/profile/presentation/pages/profile_page.dart';
@@ -56,7 +57,9 @@ class AppRouter {
                   GoRoute(
                     path: 'add-medicine',
                     name: AppPage.addMedicine.toName,
-                    builder: (context, state) => const AddMedicinePage(),
+                    builder: (context, state) => AddMedicinePage(
+                      medicine: state.extra as MedicineEntity?,
+                    ),
                   ),
                 ],
               ),

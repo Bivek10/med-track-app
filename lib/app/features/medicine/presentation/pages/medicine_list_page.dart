@@ -1,73 +1,198 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
+
 import '../../../../core/config/routes/route_path.dart';
 import '../../../../core/config/theme/app_colors.dart';
+import '../../../../injector.dart';
+import '../../domain/entities/medicine_entity.dart';
+import '../bloc/medicine_bloc.dart';
 
-class MedicineListPage extends StatelessWidget {
+class MedicineListPage extends StatefulWidget {
   const MedicineListPage({super.key});
 
   @override
+  State<MedicineListPage> createState() => _MedicineListPageState();
+}
+
+class _MedicineListPageState extends State<MedicineListPage> {
+  final ScrollController _scrollController = ScrollController();
+  late MedicineBloc _medicineBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _medicineBloc = inject<MedicineBloc>()..add(const FetchMedicines(refresh: true));
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_isBottom) {
+      _medicineBloc.add(const FetchMedicines());
+    }
+  }
+
+  bool get _isBottom {
+    if (!_scrollController.hasClients) return false;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    return currentScroll >= (maxScroll * 0.9);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
-      appBar: AppBar(
-        backgroundColor: AppColors.white.withOpacity(0.9),
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        title: Row(
-          children: [
-            Icon(Icons.medical_services, color: AppColors.primary, size: 24.sp),
-            SizedBox(width: 8.w),
-            Text(
-              'MedTrack',
-              style: TextStyle(
-                fontSize: 20.sp,
-                fontWeight: FontWeight.bold,
-                color: AppColors.primary,
-                letterSpacing: -0.5,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings, color: AppColors.slate500),
-            onPressed: () {
-              context.pushNamed(AppPage.reminder.toName);
-            },
-          ),
-          SizedBox(width: 8.w),
-        ],
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return BlocProvider.value(
+      value: _medicineBloc,
+      child: Scaffold(
+        backgroundColor: AppColors.backgroundLight,
+        appBar: AppBar(
+          backgroundColor: AppColors.white.withOpacity(0.9),
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          title: Row(
             children: [
-              _buildSearchSection(),
-              SizedBox(height: 24.h),
-              _buildActiveMedicationsSection(),
-              SizedBox(height: 24.h),
-              _buildPastMedicationsSection(),
-              SizedBox(height: 24.h),
-              _buildAddNewMedicineButton(context),
-              SizedBox(height: 80.h), // Padding for bottom nav & FAB
+              Icon(Icons.medical_services, color: AppColors.primary, size: 24.sp),
+              SizedBox(width: 8.w),
+              Text(
+                'MedTrack',
+                style: TextStyle(
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
+                  letterSpacing: -0.5,
+                ),
+              ),
             ],
           ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.settings, color: AppColors.slate500),
+              onPressed: () {
+                context.pushNamed(AppPage.reminder.toName);
+              },
+            ),
+            SizedBox(width: 8.w),
+          ],
+        ),
+        body: SafeArea(
+          child: RefreshIndicator(
+         
+          onRefresh: () async { _medicineBloc.add(const FetchMedicines(refresh: true)); },
+            child: BlocBuilder<MedicineBloc, MedicineState>(
+              builder: (context, state) {
+                if (state is MedicineLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (state is MedicineFailure && state is! MedicineLoaded) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Error: ${state.message}"),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: () =>
+                              _medicineBloc.add(const FetchMedicines(refresh: true)),
+                          child: const Text("Retry"),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                final medicines = state is MedicineLoaded
+                    ? state.medicines
+                    : <MedicineEntity>[];
+
+                if (medicines.isEmpty && state is MedicineLoaded) {
+                   return _buildEmptyState();
+                }
+
+                return ListView.builder(
+                  controller: _scrollController,
+                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                  itemCount: state is MedicineLoaded && state.hasMore
+                      ? medicines.length + 1
+                      : medicines.length + 1, // +1 for search and headers or loader
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildSearchSection(),
+                          SizedBox(height: 24.h),
+                          Text(
+                            'Active Medications',
+                            style: TextStyle(
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.slate900,
+                            ),
+                          ),
+                          SizedBox(height: 16.h),
+                        ],
+                      );
+                    }
+                    
+                    final medIndex = index - 1;
+                    if (medIndex < medicines.length) {
+                      final medicine = medicines[medIndex];
+                      return Padding(
+                        padding: EdgeInsets.only(bottom: 12.h),
+                        child: _buildMedicationCard(
+                          context,
+                          medicine: medicine,
+                        ),
+                      );
+                    } else if (state is MedicineLoaded && state.hasMore) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    } else {
+                       return Column(
+                         children: [
+                           SizedBox(height: 24.h),
+                           _buildAddNewMedicineButton(context),
+                            SizedBox(height: 80.h), 
+                         ],
+                       );
+                    }
+                  },
+                );
+              },
+            ),
+          ),
         ),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () => context.pushNamed(AppPage.addMedicine.toName),
-      //   backgroundColor: AppColors.primary,
-      //   foregroundColor: AppColors.white,
-      //   elevation: 4,
-      //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-      //   child: const Icon(Icons.add, size: 28),
-      // ),
     );
+  }
+
+  Widget _buildEmptyState() {
+     return Center(
+       child: Column(
+         mainAxisAlignment: MainAxisAlignment.center,
+         children: [
+            Icon(Icons.medication_outlined, size: 64.sp, color: AppColors.slate300),
+            SizedBox(height: 16.h),
+            Text(
+              "No medicines added yet",
+              style: TextStyle(fontSize: 16.sp, color: AppColors.slate500, fontWeight: FontWeight.w500),
+            ),
+            SizedBox(height: 24.h),
+            _buildAddNewMedicineButton(context),
+         ],
+       ),
+     );
   }
 
   Widget _buildSearchSection() {
@@ -95,100 +220,12 @@ class MedicineListPage extends StatelessWidget {
               ),
             ),
           ),
-          TextButton(
-            onPressed: () {},
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.zero,
-              minimumSize: const Size(0, 0),
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-            child: Text(
-              'FILTER',
-              style: TextStyle(
-                color: AppColors.primary,
-                fontWeight: FontWeight.bold,
-                fontSize: 12.sp,
-                letterSpacing: 0.5,
-              ),
-            ),
-          ),
         ],
       ),
     );
   }
 
-  Widget _buildActiveMedicationsSection() {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Active Medications',
-              style: TextStyle(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.bold,
-                color: AppColors.slate900,
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
-              decoration: BoxDecoration(
-                color: AppColors.primary[50], // primary-container
-                borderRadius: BorderRadius.circular(16.r),
-              ),
-              child: Text(
-                '3 ACTIVE',
-                style: TextStyle(
-                  color: AppColors.primary[800], // on-primary-container
-                  fontSize: 10.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 16.h),
-        _buildMedicationCard(
-          name: 'Amoxicillin',
-          description: 'Antibiotic • Infection',
-          icon: Icons.medication,
-          dosage: '500mg',
-          form: 'Tablet',
-          freq: '3x Daily',
-          nextDoseInfo: 'Next dose in 2h 15m',
-        ),
-        SizedBox(height: 12.h),
-        _buildMedicationCard(
-          name: 'Lisinopril',
-          description: 'BP Management',
-          icon: Icons.medication_liquid,
-          dosage: '10mg',
-          form: 'Tablet',
-          freq: '1x Daily',
-        ),
-        SizedBox(height: 12.h),
-        _buildMedicationCard(
-          name: 'Vitamin D3',
-          description: 'Supplement',
-          icon: Icons.star,
-          dosage: '2000IU',
-          form: 'Softgel',
-          freq: '1x Daily',
-        ),
-      ],
-    );
-  }
-
-  Widget _buildMedicationCard({
-    required String name,
-    required String description,
-    required IconData icon,
-    required String dosage,
-    required String form,
-    required String freq,
-    String? nextDoseInfo,
-  }) {
+  Widget _buildMedicationCard(BuildContext context, {required MedicineEntity medicine}) {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.white,
@@ -216,7 +253,7 @@ class MedicineListPage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12.r),
                 ),
                 child: Center(
-                  child: Icon(icon, color: AppColors.primary, size: 24.sp),
+                  child: Icon(Icons.medication, color: AppColors.primary, size: 24.sp),
                 ),
               ),
               SizedBox(width: 16.w),
@@ -225,7 +262,7 @@ class MedicineListPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      name,
+                      medicine.name,
                       style: TextStyle(
                         fontSize: 18.sp,
                         fontWeight: FontWeight.bold,
@@ -233,7 +270,9 @@ class MedicineListPage extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      description,
+                      medicine.instructions ?? "No instructions",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w500,
@@ -243,68 +282,42 @@ class MedicineListPage extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(Icons.more_vert, color: AppColors.slate400),
+              PopupMenuButton<String>(
+                onSelected: (value) {
+                  if (value == 'edit') {
+                    context.pushNamed(AppPage.addMedicine.toName, extra: medicine);
+                  } else if (value == 'delete') {
+                     _medicineBloc.add(DeleteMedicine(medicine.id));
+                  }
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(value: 'edit', child: Text("Edit")),
+                  const PopupMenuItem(value: 'delete', child: Text("Delete")),
+                ],
+                icon: Icon(Icons.more_vert, color: AppColors.slate400),
+              ),
             ],
           ),
           SizedBox(height: 24.h),
           Row(
             children: [
-              _buildInfoBox('DOSAGE', dosage),
+              _buildInfoBox('DOSAGE', "${medicine.dosage}${medicine.unit}"),
               SizedBox(width: 8.w),
-              _buildInfoBox('FORM', form),
+              _buildInfoBox('FORM', medicine.form),
               SizedBox(width: 8.w),
-              _buildInfoBox('FREQ', freq),
+              _buildInfoBox('FREQ', _formatFrequency(medicine)),
             ],
           ),
-          if (nextDoseInfo != null) ...[
-            SizedBox(height: 16.h),
-            Divider(color: AppColors.slate100),
-            SizedBox(height: 12.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.event_repeat,
-                      color: AppColors.error,
-                      size: 16.sp,
-                    ),
-                    SizedBox(width: 8.w),
-                    Text(
-                      nextDoseInfo,
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.slate500,
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  width: 96.w,
-                  height: 6.h,
-                  decoration: BoxDecoration(
-                    color: AppColors.slate200,
-                    borderRadius: BorderRadius.circular(4.r),
-                  ),
-                  child: FractionallySizedBox(
-                    alignment: Alignment.centerLeft,
-                    widthFactor: 0.66,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(4.r),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
         ],
       ),
     );
+  }
+
+  String _formatFrequency(MedicineEntity med) {
+    if (med.frequencyType == 'once_daily') return "1x Daily";
+    if (med.frequencyType == 'twice_daily') return "2x Daily";
+    if (med.frequencyType == 'specific_days') return "${med.daysOfWeek.length} Target Days";
+    return med.frequencyType;
   }
 
   Widget _buildInfoBox(String label, String value) {
@@ -341,77 +354,6 @@ class MedicineListPage extends StatelessWidget {
     );
   }
 
-  Widget _buildPastMedicationsSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Completed / Past',
-          style: TextStyle(
-            fontSize: 16.sp,
-            fontWeight: FontWeight.bold,
-            color: AppColors.slate900,
-          ),
-        ),
-        SizedBox(height: 12.h),
-        Opacity(
-          opacity: 0.7,
-          child: Container(
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(12.r),
-            ),
-            padding: EdgeInsets.all(16.r),
-            child: Row(
-              children: [
-                Container(
-                  width: 40.w,
-                  height: 40.w,
-                  decoration: BoxDecoration(
-                    color: AppColors.slate100,
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.history,
-                      color: AppColors.slate500,
-                      size: 20.sp,
-                    ),
-                  ),
-                ),
-                SizedBox(width: 16.w),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Ibuprofen',
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.slate900,
-                        ),
-                      ),
-                      Text(
-                        'Completed on Oct 12, 2023',
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.slate500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Icon(Icons.chevron_right, color: AppColors.slate400),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildAddNewMedicineButton(BuildContext context) {
     return GestureDetector(
       onTap: () => context.pushNamed(AppPage.addMedicine.toName),
@@ -422,8 +364,7 @@ class MedicineListPage extends StatelessWidget {
           border: Border.all(
             color: AppColors.primary.withOpacity(0.3),
             width: 2,
-            style: BorderStyle
-                .solid, // Note: Flutter doesn't natively support dashed borders without custom painters/packages
+            style: BorderStyle.solid,
           ),
           borderRadius: BorderRadius.circular(16.r),
         ),

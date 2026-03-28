@@ -16,6 +16,11 @@ import 'features/auth/data/repository/auth_repository_impl.dart';
 import 'features/auth/domain/repository/auth_repository.dart';
 import 'features/auth/domain/usecases/auth_usecase.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/medicine/data/datasources/medicine_api_service.dart';
+import 'features/medicine/data/repository/medicine_repository_impl.dart';
+import 'features/medicine/domain/repository/medicine_repository.dart';
+import 'features/medicine/domain/usecases/medicine_usecase.dart';
+import 'features/medicine/presentation/bloc/medicine_bloc.dart';
 
 
 late SharedPreferences preferences;
@@ -41,6 +46,8 @@ Future<void> initDependencies() async {
 
 void _registerBloc() {
   inject.registerLazySingleton<AuthBloc>(() => AuthBloc(inject<AuthUsecase>()));
+  inject
+      .registerFactory<MedicineBloc>(() => MedicineBloc(inject<MedicineUsecase>()));
 }
 
 void _registerAppTheme() {
@@ -82,6 +89,9 @@ void _registerServices() {
   inject
     ..registerLazySingleton<AuthApiService>(
       () => AuthApiServiceImpl(inject<DioService>()),
+    )
+    ..registerLazySingleton<MedicineApiService>(
+      () => MedicineApiServiceImpl(inject<DioService>()),
     );
 }
 
@@ -89,12 +99,18 @@ void _registerRepository() {
   inject.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(inject<AuthApiService>()),
   );
+  inject.registerLazySingleton<MedicineRepository>(
+    () => MedicineRepositoryImpl(inject<MedicineApiService>()),
+  );
 }
 
 void _registerUseCases() {
   inject
     ..registerLazySingleton<AuthUsecase>(
       () => AuthUsecase(inject<AuthRepository>()),
+    )
+    ..registerLazySingleton<MedicineUsecase>(
+      () => MedicineUsecase(inject<MedicineRepository>()),
     );
 }
 
