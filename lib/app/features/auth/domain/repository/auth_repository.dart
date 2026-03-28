@@ -10,6 +10,7 @@ abstract class AuthRepository {
   Future<Either<Failure, ApiResponse<UserEntity>>> signIn(JsonMap userMap);
   Future<Either<Failure, ApiResponse<UserEntity>>> signUp(JsonMap userMap);
   Future<Either<Failure, ApiResponse<UserEntity>>> getProfile();
+  Future<Either<Failure, ApiResponse<UserEntity>>> updateProfile(JsonMap body);
   Future<Either<Failure, ApiResponse<RefreshEntity>>> refreshToken(
     JsonMap body,
   );

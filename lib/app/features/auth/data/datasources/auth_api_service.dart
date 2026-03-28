@@ -10,6 +10,7 @@ abstract class AuthApiService {
   Future<Either<Failure, ApiResponse<UserM>>> signIn(JsonMap userMap);
   Future<Either<Failure, ApiResponse<UserM>>> signUp(JsonMap userMap);
   Future<Either<Failure, ApiResponse<UserM>>> getProfile();
+  Future<Either<Failure, ApiResponse<UserM>>> updateProfile(JsonMap body);
   Future<Either<Failure, ApiResponse<RefreshEntity>>> refreshToken(
     JsonMap body,
   );
@@ -55,6 +56,19 @@ class AuthApiServiceImpl implements AuthApiService {
         final data = json['data'];
         return UserM.fromJson(data is JsonMap ? data : json);
       },
+    );
+  }
+
+  @override
+  Future<Either<Failure, ApiResponse<UserM>>> updateProfile(JsonMap body) async {
+    return _dioService.makeRequest<UserM, JsonMap>(
+      type: RequestType.put,
+      endpoint: ApiEndpoints.updateProfile,
+      fromJson: (json) {
+        final data = json['data'];
+        return UserM.fromJson(data is JsonMap ? data : json);
+      },
+      data: body,
     );
   }
 

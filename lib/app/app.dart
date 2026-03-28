@@ -29,7 +29,7 @@ class App extends StatelessWidget {
               builder:
                   (context, themeData) => MaterialApp.router(
                     debugShowCheckedModeBanner: kDebugMode,
-                    routerConfig: AppRouter(inject<AuthBloc>()).router,
+                    routerConfig: inject<AppRouter>().router,
                     title: 'Flutter Bloc Skeleton',
                     theme: themeData,
                     localizationsDelegates: [...context.localizationDelegates],

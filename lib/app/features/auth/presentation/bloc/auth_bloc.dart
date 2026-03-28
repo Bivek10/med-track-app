@@ -15,10 +15,31 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthUsecase authUsecase;
   AuthBloc(this.authUsecase) : super(AuthInitial()) {
     on<AuthStatus>(_getProfile);
+    on<AuthUpdateProfile>(_updateProfile);
     on<AuthSignIn>(_signIn);
     on<AuthSignUp>(_signUp);
     on<AuthSignOut>(_signOut);
-    add(AuthStatus());
+    add(const AuthStatus());
+  }
+
+  Future<void> _updateProfile(
+    AuthUpdateProfile event,
+    Emitter<AuthState> emit,
+  ) async {
+    final currentState = state;
+    if (currentState is Authenticated) {
+      emit(Authenticated(currentState.user, isUpdating: true));
+    } else {
+      emit(AuthLoading());
+    }
+
+    final res = await authUsecase.callUpdateProfile(event.userMap);
+    res.match(
+      (l) => emit(AuthFailure(l.message)),
+      (r) {
+        emit(Authenticated(r.data, message: "Profile updated successfully"));
+      },
+    );
   }
 
   Future<void> _signUp(AuthSignUp event, Emitter<AuthState> emit) async {

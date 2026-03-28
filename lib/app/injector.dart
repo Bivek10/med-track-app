@@ -7,6 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/config/api/index.dart' show DioClient, DioService;
+import 'core/config/routes/app_routes.dart';
 import 'core/config/theme/app_theme.dart';
 import 'core/utils/bloc_observer.dart';
 import 'core/utils/path_provider/index.dart';
@@ -35,6 +36,7 @@ Future<void> initDependencies() async {
   _registerServices();
   _registerRepository();
   _registerUseCases();
+  _registerRouter();
 }
 
 void _registerBloc() {
@@ -94,7 +96,10 @@ void _registerUseCases() {
     ..registerLazySingleton<AuthUsecase>(
       () => AuthUsecase(inject<AuthRepository>()),
     );
- 
+}
+
+void _registerRouter() {
+  inject.registerLazySingleton<AppRouter>(() => AppRouter(inject<AuthBloc>()));
 }
 
 Future<void> _initLocalization() async {

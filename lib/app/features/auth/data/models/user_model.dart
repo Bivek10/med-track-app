@@ -12,6 +12,11 @@ class UserM {
   final String? role;
   final String? accessToken;
   final String? refreshToken;
+  final String? gender;
+  final int? age;
+  final double? weight;
+  final String? emergencyContactName;
+  final String? emergencyContactNumber;
 
   UserM({
     required this.userId,
@@ -24,20 +29,32 @@ class UserM {
     this.role,
     this.accessToken,
     this.refreshToken,
+    this.gender,
+    this.age,
+    this.weight,
+    this.emergencyContactName,
+    this.emergencyContactNumber,
   });
 
   factory UserM.fromJson(JsonMap json) {
     return UserM(
-      userId: (json['user_id'] ?? json['id']) as int,
-      email: json['email'] as String,
-      firstName: (json['first_name'] ?? json['firstName']) as String,
-      lastName: (json['last_name'] ?? json['lastName']) as String,
+      userId: (json['user_id'] ?? json['id'] ?? 0) as int,
+      email: json['email'] as String? ?? '',
+      firstName: (json['first_name'] ?? json['firstName'] ?? '') as String,
+      lastName: (json['last_name'] ?? json['lastName'] ?? '') as String,
       middleName: (json['middle_name'] ?? json['middleName']) as String?,
       authProvider: (json['auth_provider'] ?? json['authProvider']) as String?,
       profilePicture: (json['profile_picture'] ?? json['image']) as String?,
       role: json['role'] as String?,
       accessToken: (json['access_token'] ?? json['accessToken']) as String?,
       refreshToken: (json['refresh_token'] ?? json['refreshToken']) as String?,
+      gender: json['gender'] as String?,
+      age: json['age'] is int? ? json['age'] as int? : int.tryParse(json['age'].toString()),
+      weight: json['weight'] is double?
+          ? json['weight'] as double?
+          : double.tryParse(json['weight'].toString()),
+      emergencyContactName: json['emergencyContactName'] as String?,
+      emergencyContactNumber: json['emergencyContactNumber'] as String?,
     );
   }
 
@@ -52,6 +69,11 @@ class UserM {
       'role': role,
       'access_token': accessToken,
       'refresh_token': refreshToken,
+      'gender': gender,
+      'age': age,
+      'weight': weight,
+      'emergencyContactName': emergencyContactName,
+      'emergencyContactNumber': emergencyContactNumber,
     };
   }
 
@@ -61,6 +83,11 @@ class UserM {
       email: email,
       role: role ?? 'USER',
       profile: profilePicture ?? '',
+      gender: gender,
+      age: age,
+      weight: weight,
+      emergencyContactName: emergencyContactName,
+      emergencyContactNumber: emergencyContactNumber,
     );
   }
 }

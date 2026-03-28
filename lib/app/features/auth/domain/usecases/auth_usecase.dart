@@ -15,6 +15,12 @@ class AuthUsecase {
     return authRepository.getProfile();
   }
 
+  Future<Either<Failure, ApiResponse<UserEntity>>> callUpdateProfile(
+    JsonMap body,
+  ) {
+    return authRepository.updateProfile(body);
+  }
+
   Future<Either<Failure, ApiResponse<UserEntity>>> callSignIn(JsonMap userMap) {
     return authRepository.signIn(userMap);
   }

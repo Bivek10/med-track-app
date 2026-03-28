@@ -13,9 +13,25 @@ class AuthRepositoryImpl extends AuthRepository {
 
   AuthRepositoryImpl(AuthApiService authApiService)
     : _authApiService = authApiService;
+
   @override
   Future<Either<Failure, ApiResponse<UserEntity>>> getProfile() async {
     final result = await _authApiService.getProfile();
+    return result.map((response) {
+      final userModel = response.data;
+      final userEntity = userModel.toEntity();
+      return ApiResponse<UserEntity>(
+        data: userEntity,
+        statusCode: response.statusCode,
+      );
+    });
+  }
+
+  @override
+  Future<Either<Failure, ApiResponse<UserEntity>>> updateProfile(
+    JsonMap body,
+  ) async {
+    final result = await _authApiService.updateProfile(body);
     return result.map((response) {
       final userModel = response.data;
       final userEntity = userModel.toEntity();
