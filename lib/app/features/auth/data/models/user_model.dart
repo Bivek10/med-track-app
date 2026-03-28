@@ -28,16 +28,16 @@ class UserM {
 
   factory UserM.fromJson(JsonMap json) {
     return UserM(
-      userId: json['user_id'] as int,
+      userId: (json['user_id'] ?? json['id']) as int,
       email: json['email'] as String,
-      firstName: json['first_name'] as String,
-      lastName: json['last_name'] as String,
-      middleName: json['middle_name'] as String?,
-      authProvider: json['auth_provider'] as String?,
-      profilePicture: json['profile_picture'] as String?,
+      firstName: (json['first_name'] ?? json['firstName']) as String,
+      lastName: (json['last_name'] ?? json['lastName']) as String,
+      middleName: (json['middle_name'] ?? json['middleName']) as String?,
+      authProvider: (json['auth_provider'] ?? json['authProvider']) as String?,
+      profilePicture: (json['profile_picture'] ?? json['image']) as String?,
       role: json['role'] as String?,
-      accessToken: json['access_token'] as String?,
-      refreshToken: json['refresh_token'] as String?,
+      accessToken: (json['access_token'] ?? json['accessToken']) as String?,
+      refreshToken: (json['refresh_token'] ?? json['refreshToken']) as String?,
     );
   }
 

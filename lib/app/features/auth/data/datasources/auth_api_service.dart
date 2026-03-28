@@ -25,7 +25,10 @@ class AuthApiServiceImpl implements AuthApiService {
     return _dioService.makeRequest<UserM, JsonMap>(
       type: RequestType.post,
       endpoint: ApiEndpoints.login,
-      fromJson: (json) => UserM.fromJson(json['data'] as JsonMap),
+      fromJson: (json) {
+        final data = json['data'];
+        return UserM.fromJson(data is JsonMap ? data : json);
+      },
       data: userMap,
     );
   }
@@ -35,7 +38,10 @@ class AuthApiServiceImpl implements AuthApiService {
     return _dioService.makeRequest<UserM, JsonMap>(
       type: RequestType.post,
       endpoint: ApiEndpoints.register,
-      fromJson: (json) => UserM.fromJson(json['data'] as JsonMap),
+      fromJson: (json) {
+        final data = json['data'];
+        return UserM.fromJson(data is JsonMap ? data : json);
+      },
       data: userMap,
     );
   }
@@ -45,7 +51,10 @@ class AuthApiServiceImpl implements AuthApiService {
     return _dioService.makeRequest<UserM, JsonMap>(
       type: RequestType.get,
       endpoint: ApiEndpoints.profile,
-      fromJson: (json) => UserM.fromJson(json['data'] as JsonMap),
+      fromJson: (json) {
+        final data = json['data'];
+        return UserM.fromJson(data is JsonMap ? data : json);
+      },
     );
   }
 

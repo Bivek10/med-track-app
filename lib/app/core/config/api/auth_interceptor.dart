@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io' show HttpHeaders;
 
 import 'package:dio/dio.dart'
@@ -9,6 +10,7 @@ import 'package:dio/dio.dart'
         RequestOptions,
         Response,
         ResponseInterceptorHandler;
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart'
     show FlutterSecureStorage;
 import 'package:fpdart/fpdart.dart';
@@ -31,11 +33,14 @@ class DioAuthInterceptor extends Interceptor {
       final token = await inject<FlutterSecureStorage>().read(
         key: SecureStorageKey.bearerToken.name,
       );
-      options.headers.addAll({
-        HttpHeaders.authorizationHeader: "Bearer $token",
-      });
-      handler.next(options);
-    } catch (_) {}
+      log("token::: ${token}");
+      if (token != null && token.isNotEmpty) {
+        options.headers[HttpHeaders.authorizationHeader] = "Bearer $token";
+      }
+    } catch (e) {
+      debugPrint("Error reading token from storage: $e");
+    }
+    handler.next(options);
   }
 
   @override

@@ -23,30 +23,29 @@ class DioService {
   }) async {
     try {
       late Response response;
-      final url = '${Config.baseUrl}$endpoint';
       switch (type) {
         case RequestType.get:
           response = await dioClient.dio.get(
-            url,
+            endpoint,
             queryParameters: queryParameters,
           );
           break;
         case RequestType.post:
           response = await dioClient.dio.post(
-            url,
+            endpoint,
             data: data,
             queryParameters: queryParameters,
           );
         case RequestType.put:
           response = await dioClient.dio.put(
-            url,
+            endpoint,
             data: data,
             queryParameters: queryParameters,
           );
           break;
         case RequestType.delete:
           response = await dioClient.dio.delete(
-            url,
+            endpoint,
             data: data,
             queryParameters: queryParameters,
           );
