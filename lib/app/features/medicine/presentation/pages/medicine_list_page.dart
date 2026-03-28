@@ -120,9 +120,7 @@ class _MedicineListPageState extends State<MedicineListPage> {
                 return ListView.builder(
                   controller: _scrollController,
                   padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-                  itemCount: state is MedicineLoaded && state.hasMore
-                      ? medicines.length + 1
-                      : medicines.length + 1, // +1 for search and headers or loader
+                  itemCount: medicines.length + 2, // Header (1) + Meds + Footer (1)
                   itemBuilder: (context, index) {
                     if (index == 0) {
                       return Column(
@@ -142,7 +140,7 @@ class _MedicineListPageState extends State<MedicineListPage> {
                         ],
                       );
                     }
-                    
+
                     final medIndex = index - 1;
                     if (medIndex < medicines.length) {
                       final medicine = medicines[medIndex];
@@ -159,18 +157,34 @@ class _MedicineListPageState extends State<MedicineListPage> {
                         child: Center(child: CircularProgressIndicator()),
                       );
                     } else {
-                       return Column(
-                         children: [
-                           SizedBox(height: 24.h),
-                           _buildAddNewMedicineButton(context),
-                            SizedBox(height: 80.h), 
-                         ],
-                       );
+                      return Column(
+                        children: [
+                          if (medicines.isNotEmpty) ...[
+                            SizedBox(height: 24.h),
+                            _buildAddNewMedicineButton(context),
+                          ],
+                          SizedBox(height: 80.h),
+                        ],
+                      );
                     }
                   },
                 );
               },
             ),
+          ),
+        ),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () async {
+            final result = await context.pushNamed(AppPage.addMedicine.toName);
+            if (result == true) {
+              _medicineBloc.add(const FetchMedicines(refresh: true));
+            }
+          },
+          backgroundColor: AppColors.primary,
+          icon: const Icon(Icons.add, color: Colors.white),
+          label: const Text(
+            "Add Medicine",
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
         ),
       ),
@@ -189,7 +203,7 @@ class _MedicineListPageState extends State<MedicineListPage> {
               style: TextStyle(fontSize: 16.sp, color: AppColors.slate500, fontWeight: FontWeight.w500),
             ),
             SizedBox(height: 24.h),
-            _buildAddNewMedicineButton(context),
+           // _buildAddNewMedicineButton(context),
          ],
        ),
      );
