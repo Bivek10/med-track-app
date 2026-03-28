@@ -83,11 +83,33 @@ class _MedicineListPageState extends State<MedicineListPage> {
           ],
         ),
         body: SafeArea(
-          child: RefreshIndicator(
-         
-          onRefresh: () async { _medicineBloc.add(const FetchMedicines(refresh: true)); },
-            child: BlocBuilder<MedicineBloc, MedicineState>(
-              builder: (context, state) {
+          
+     
+          
+          child: BlocListener<MedicineBloc, MedicineState>(
+            listener: (context, state) {
+              if (state is MedicineActionSuccess) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.message),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              } else if (state is MedicineFailure) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.message),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            child: RefreshIndicator(
+              onRefresh: () async {
+                _medicineBloc.add(const FetchMedicines(refresh: true));
+              },
+              child: BlocBuilder<MedicineBloc, MedicineState>(
+                builder: (context, state) {
                 if (state is MedicineLoading) {
                   return const Center(child: CircularProgressIndicator());
                 }
@@ -173,6 +195,7 @@ class _MedicineListPageState extends State<MedicineListPage> {
             ),
           ),
         ),
+      ),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () async {
             final result = await context.pushNamed(AppPage.addMedicine.toName);
@@ -187,8 +210,7 @@ class _MedicineListPageState extends State<MedicineListPage> {
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
         ),
-      ),
-    );
+    ));
   }
 
   Widget _buildEmptyState() {
@@ -307,7 +329,7 @@ class _MedicineListPageState extends State<MedicineListPage> {
                       _medicineBloc.add(const FetchMedicines(refresh: true));
                     }
                   } else if (value == 'delete') {
-                    _medicineBloc.add(DeleteMedicine(medicine.id));
+                    _showDeleteConfirmation(context, medicine);
                   }
                 },
                 itemBuilder: (context) => [
@@ -374,48 +396,26 @@ class _MedicineListPageState extends State<MedicineListPage> {
     );
   }
 
-  Widget _buildAddNewMedicineButton(BuildContext context) {
-    return GestureDetector(
-      onTap: () async {
-        final result = await context.pushNamed(AppPage.addMedicine.toName);
-        if (result == true) {
-          _medicineBloc.add(const FetchMedicines(refresh: true));
-        }
-      },
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.symmetric(vertical: 20.h),
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: AppColors.primary.withOpacity(0.3),
-            width: 2,
-            style: BorderStyle.solid,
+  void _showDeleteConfirmation(BuildContext context, MedicineEntity medicine) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Delete Medication"),
+        content: Text("Are you sure you want to delete ${medicine.name}?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
           ),
-          borderRadius: BorderRadius.circular(16.r),
-        ),
-        child: Column(
-          children: [
-            Container(
-              width: 48.w,
-              height: 48.w,
-              decoration: BoxDecoration(
-                color: AppColors.primary[50],
-                shape: BoxShape.circle,
-              ),
-              child: Center(child: Icon(Icons.add, color: AppColors.primary)),
-            ),
-            SizedBox(height: 8.h),
-            Text(
-              'ADD NEW MEDICINE',
-              style: TextStyle(
-                color: AppColors.primary,
-                fontWeight: FontWeight.bold,
-                fontSize: 14.sp,
-                letterSpacing: 0.5,
-              ),
-            ),
-          ],
-        ),
+          TextButton(
+            onPressed: () {
+              _medicineBloc.add(DeleteMedicine(medicine.id));
+              Navigator.pop(context);
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text("Delete"),
+          ),
+        ],
       ),
     );
   }

@@ -51,11 +51,14 @@ class DioService {
           );
       }
 
-      final parsedData = response.data != null ? fromJson(response.data) : null;
-      if (parsedData != null) {
+      if (response.statusCode != null &&
+          response.statusCode! >= 200 &&
+          response.statusCode! < 300) {
+        final parsedData =
+            response.data != null ? fromJson(response.data) : null;
         final apiResponse = ApiResponse<T>(
-          data: parsedData,
-          statusCode: response.statusCode ?? 200,
+          data: parsedData as T,
+          statusCode: response.statusCode!,
         );
         if (onSuccess != null) {
           return onSuccess(apiResponse);
