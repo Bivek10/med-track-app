@@ -30,7 +30,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _getProfile(AuthStatus event, Emitter<AuthState> emit) async {
     final res = await authUsecase.callProfile();
     res.match(
-      (l) => emit(AuthFailure(l.message)),
+      (l) => emit(const Unauthenticated()),
       (r) => emit(Authenticated(r.data)),
     );
   }

@@ -41,17 +41,21 @@ class DioAuthInterceptor extends Interceptor {
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) async {
     if (response.requestOptions.path == ApiEndpoints.login ||
+        response.requestOptions.path == ApiEndpoints.register ||
         response.requestOptions.path == ApiEndpoints.refreshToken) {
-      await Future.wait([
-        inject<FlutterSecureStorage>().write(
-          key: SecureStorageKey.bearerToken.name,
-          value: response.data?['accessToken'],
-        ),
-        inject<FlutterSecureStorage>().write(
-          key: SecureStorageKey.refreshToken.name,
-          value: response.data?['refreshToken'],
-        ),
-      ]);
+      final responseData = response.data?['data'];
+      if (responseData != null) {
+        await Future.wait([
+          inject<FlutterSecureStorage>().write(
+            key: SecureStorageKey.bearerToken.name,
+            value: responseData['access_token'] as String?,
+          ),
+          inject<FlutterSecureStorage>().write(
+            key: SecureStorageKey.refreshToken.name,
+            value: responseData['refresh_token'] as String?,
+          ),
+        ]);
+      }
     }
     handler.next(response);
   }
@@ -68,7 +72,7 @@ class DioAuthInterceptor extends Interceptor {
       );
 
       final response = await inject<AuthUsecase>().callRefresh({
-        "refreshToken": refreshToken,
+        "refresh_token": refreshToken,
       });
 
       err.requestOptions.headers[HttpHeaders.authorizationHeader] =

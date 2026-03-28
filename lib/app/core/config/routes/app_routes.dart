@@ -116,9 +116,16 @@ class AppRouter {
       ),
     ],
     errorBuilder: (context, state) => const PageNotFoundView(),
-    redirect: (context, _) {
+    redirect: (context, state) {
       final isLoggedIn = authBloc.state is Authenticated;
-      if (isLoggedIn) {
+      final isAuthPath =
+          state.matchedLocation == AppPage.login.toPath ||
+          state.matchedLocation == AppPage.register.toPath;
+
+      if (!isLoggedIn && !isAuthPath) {
+        return AppPage.login.toPath;
+      }
+      if (isLoggedIn && isAuthPath) {
         return AppPage.home.toPath;
       }
       return null;
