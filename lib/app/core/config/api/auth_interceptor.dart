@@ -76,20 +76,26 @@ class DioAuthInterceptor extends Interceptor {
         key: SecureStorageKey.refreshToken.name,
       );
 
-      final response = await inject<AuthUsecase>().callRefresh({
+      final result = await inject<AuthUsecase>().callRefresh({
         "refresh_token": refreshToken,
       });
 
-      err.requestOptions.headers[HttpHeaders.authorizationHeader] =
-          response
-              .getRight()
-              .getOrElse(
-                () => ApiResponse(data: RefreshEntity.empty, statusCode: 200),
-              )
-              .data
-              .refreshToken;
+      if (result.isRight()) {
+        final refreshData =
+            result.getRight().getOrElse(() => throw Exception()).data;
 
-      handler.resolve(await inject<DioClient>().dio.fetch(err.requestOptions));
+        final newAccessToken = refreshData.accessToken;
+        err.requestOptions.headers[HttpHeaders.authorizationHeader] =
+            "Bearer $newAccessToken";
+
+        try {
+          final response =
+              await inject<DioClient>().dio.fetch(err.requestOptions);
+          return handler.resolve(response);
+        } catch (e) {
+          return handler.next(err);
+        }
+      }
     }
     handler.next(err);
   }

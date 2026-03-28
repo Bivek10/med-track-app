@@ -79,7 +79,10 @@ class AuthApiServiceImpl implements AuthApiService {
     return _dioService.makeRequest<RefreshEntity, JsonMap>(
       type: RequestType.post,
       endpoint: ApiEndpoints.refreshToken,
-      fromJson: RefreshEntity.fromJson,
+      fromJson: (json) {
+        final data = json['data'];
+        return RefreshEntity.fromJson(data is JsonMap ? data : json);
+      },
       data: body,
     );
   }
