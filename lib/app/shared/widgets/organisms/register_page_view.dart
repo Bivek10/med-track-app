@@ -22,15 +22,18 @@ class _RegisterPageViewState extends State<RegisterPageView> {
   final formKey = GlobalKey<FormBuilderState>();
 
   void onAuthStateListener(BuildContext context, AuthState state) {
-    if (state is AuthSuccess) {
+    if (state is AuthFailure) {
       context.showSnackBar(state.message);
-      context.go(AppPage.login.toPath);
+    }
+    if (state is Authenticated) {
+      context.showSnackBar("Registration successful");
+      context.go(AppPage.home.toPath);
     }
   }
 
   void onSignUpButtonPressed() {
     if (formKey.currentState!.saveAndValidate()) {
-      // context.read<AuthBloc>().add(AuthSignUp(userMap: formKey.formValue));
+      context.read<AuthBloc>().add(AuthSignUp(userMap: formKey.currentState!.value));
     }
   }
 

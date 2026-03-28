@@ -16,7 +16,7 @@ class LoginInputField extends StatelessWidget with AuthValidator {
       child: Column(
         children: [
           AppFormField(
-            name: "username",
+            name: "email",
             label: "Email Address",
             hintText: "name@example.com",
             keyboardType: TextInputType.emailAddress,

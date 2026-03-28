@@ -25,13 +25,15 @@ class _LoginPageViewState extends State<LoginPageView> {
     if (state is AuthFailure) {
       context.showSnackBar(state.message);
     }
+    if (state is Authenticated) {
+      context.go(AppPage.home.toPath);
+    }
   }
 
   void onSignInButtonPressed() {
-    context.push(AppPage.home.toPath);
-    // if (formKey.currentState!.saveAndValidate()) {
-    //   context.read<AuthBloc>().add(AuthSignIn(userMap: formKey.formValue));
-    // }
+    if (formKey.currentState!.saveAndValidate()) {
+      context.read<AuthBloc>().add(AuthSignIn(userMap: formKey.currentState!.value));
+    }
   }
 
   void onRegisterButtonPressed() {
