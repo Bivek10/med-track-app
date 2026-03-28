@@ -122,7 +122,7 @@ class _AddMedicinePageState extends State<AddMedicinePage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.message), backgroundColor: Colors.green),
             );
-            Navigator.pop(context);
+            Navigator.pop(context, true);
           } else if (state is MedicineFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.message), backgroundColor: Colors.red),

@@ -283,11 +283,17 @@ class _MedicineListPageState extends State<MedicineListPage> {
                 ),
               ),
               PopupMenuButton<String>(
-                onSelected: (value) {
+                onSelected: (value) async {
                   if (value == 'edit') {
-                    context.pushNamed(AppPage.addMedicine.toName, extra: medicine);
+                    final result = await context.pushNamed(
+                      AppPage.addMedicine.toName,
+                      extra: medicine,
+                    );
+                    if (result == true) {
+                      _medicineBloc.add(const FetchMedicines(refresh: true));
+                    }
                   } else if (value == 'delete') {
-                     _medicineBloc.add(DeleteMedicine(medicine.id));
+                    _medicineBloc.add(DeleteMedicine(medicine.id));
                   }
                 },
                 itemBuilder: (context) => [
@@ -356,7 +362,12 @@ class _MedicineListPageState extends State<MedicineListPage> {
 
   Widget _buildAddNewMedicineButton(BuildContext context) {
     return GestureDetector(
-      onTap: () => context.pushNamed(AppPage.addMedicine.toName),
+      onTap: () async {
+        final result = await context.pushNamed(AppPage.addMedicine.toName);
+        if (result == true) {
+          _medicineBloc.add(const FetchMedicines(refresh: true));
+        }
+      },
       child: Container(
         width: double.infinity,
         padding: EdgeInsets.symmetric(vertical: 20.h),
