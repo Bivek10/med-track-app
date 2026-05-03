@@ -1,7 +1,8 @@
 import 'package:easy_localization/easy_localization.dart' show EasyLocalization;
-import 'package:firebase_push_notification_module/fcm_service.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,6 +11,7 @@ import 'core/config/api/index.dart' show DioClient, DioService;
 import 'core/config/routes/app_routes.dart';
 import 'core/config/theme/app_theme.dart';
 import 'core/utils/bloc_observer.dart';
+import 'core/utils/fcm_service.dart';
 import 'core/utils/path_provider/index.dart';
 import 'features/auth/data/datasources/auth_api_service.dart';
 import 'features/auth/data/repository/auth_repository_impl.dart';
@@ -39,7 +41,7 @@ final inject = GetIt.instance;
 Future<void> initDependencies() async {
   WidgetsFlutterBinding.ensureInitialized();
   _registerSecureStorage();
-  // _registerFCM();
+  _registerFCM();
   await Future.wait([
     _initPathProvider(),
     _initLocalization(),
@@ -92,7 +94,9 @@ void _registerFCM() {
       FlutterLocalNotificationsPlugin(),
       defaultIcon: "@mipmap/ic_launcher",
       showToken: true,
-      getToken: (token) {},
+      onTokenRefreshCallback: (token) {
+        inject<AuthRepository>().updateDeviceToken(token);
+      },
       onLocalNotificationTab: (message) {},
       onFCMNotificationTab: (message) {},
     ),

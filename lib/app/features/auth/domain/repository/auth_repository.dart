@@ -14,4 +14,5 @@ abstract class AuthRepository {
   Future<Either<Failure, ApiResponse<RefreshEntity>>> refreshToken(
     JsonMap body,
   );
+  Future<Either<Failure, ApiResponse<JsonMap>>> updateDeviceToken(String token);
 }

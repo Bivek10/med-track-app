@@ -10,4 +10,5 @@ class ApiEndpoints {
   static const String adherence = '/reports/adherence';
   static const String missedDoses = '/reports/missed-doses';
   static const String getPosts = '/posts';
+  static const String deviceToken = '/users/device-token';
 }
