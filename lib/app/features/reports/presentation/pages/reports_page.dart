@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../injector.dart';
 import '../../../../core/config/theme/app_colors.dart';
+import '../../../../injector.dart';
 import '../bloc/reports_bloc.dart';
 import '../bloc/reports_event.dart';
 import '../bloc/reports_state.dart';
@@ -23,249 +23,316 @@ class _ReportsPageState extends State<ReportsPage> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => inject<ReportsBloc>()..add(const LoadReportsEvent()),
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Reports & Export"),
-          actions: [
-            IconButton(
-              onPressed: () {
-                // TODO: date range picker
-              },
-              icon: const Icon(Icons.calendar_today),
-            ),
-          ],
-        ),
-        body: BlocBuilder<ReportsBloc, ReportsState>(
-          builder: (context, state) {
-            if (state is ReportsLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
+      child: Builder(builder: (context) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text("Reports & Export"),
+            actions: [
+              IconButton(
+                onPressed: () => _showPeriodPicker(context),
+                icon: const Icon(Icons.calendar_today),
+              ),
+            ],
+          ),
+          body: BlocBuilder<ReportsBloc, ReportsState>(
+            builder: (context, state) {
+              if (state is ReportsLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-            if (state is ReportsError) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      state.message,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(color: Colors.red),
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        context.read<ReportsBloc>().add(const LoadReportsEvent());
-                      },
-                      child: const Text("Retry"),
-                    ),
-                  ],
-                ),
-              );
-            }
+              if (state is ReportsError) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        state.message,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          context
+                              .read<ReportsBloc>()
+                              .add(const LoadReportsEvent());
+                        },
+                        child: const Text("Retry"),
+                      ),
+                    ],
+                  ),
+                );
+              }
 
-            if (state is ReportsLoaded) {
-              final report = state.adherenceReport;
-              final missedDoses = state.missedDoses;
+              if (state is ReportsLoaded) {
+                final report = state.adherenceReport;
+                final missedDoses = state.missedDoses;
 
-              return SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // ── Monthly Adherence Summary ────────────────
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "${report.period.toUpperCase()} Adherence",
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppColors.primary.withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(100),
-                                ),
-                                child: Text(
-                                  DateFormat('MMMM yyyy').format(DateTime.now()).toUpperCase(),
+                return SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // ── Monthly Adherence Summary ────────────────
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "${report.period.toUpperCase()} Adherence",
                                   style: const TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.primary,
-                                    letterSpacing: 0.5,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w700,
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-
-                          // Stat cards
-                          Row(
-                            children: [
-                              Expanded(
-                                child: AdherenceStatCard(
-                                  label: "Adherence Rate",
-                                  value: "${report.overallAdherencePercentage.toInt()}%",
-                                  trendText: "Overall adherence",
-                                  trendUp: report.overallAdherencePercentage >= 80,
-                                  isPrimary: true,
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: AdherenceStatCard(
-                                  label: "Doses Taken",
-                                  value: "${report.totalTaken}/${report.totalScheduled}",
-                                  trendText: "${report.totalMissed} missed",
-                                  trendUp: report.totalMissed == 0,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // ── Weekly Progress Chart ────────────────────
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      child: WeeklyProgressChart(
-                        weeklyValues: report.dailyBreakdown.map((e) {
-                          final total = e.taken + e.missed;
-                          return total > 0 ? e.taken / total : 0.0;
-                        }).toList(),
-                        currentStreak: _calculateStreak(report.dailyBreakdown),
-                      ),
-                    ),
-
-                    // ── Recent Missed Doses ──────────────────────
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                "Recent Missed Doses",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              if (missedDoses.isNotEmpty)
-                                GestureDetector(
-                                  onTap: () {
-                                    // TODO: view all missed doses
-                                  },
-                                  child: const Text(
-                                    "View All",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        AppColors.primary.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(100),
+                                  ),
+                                  child: Text(
+                                    DateFormat('MMMM yyyy')
+                                        .format(DateTime.now())
+                                        .toUpperCase(),
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w500,
                                       color: AppColors.primary,
+                                      letterSpacing: 0.5,
                                     ),
                                   ),
                                 ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          if (missedDoses.isEmpty)
-                            const Center(
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(vertical: 20),
-                                child: Text("No missed doses! Keep it up."),
-                              ),
-                            )
-                          else
-                            ListView.separated(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: missedDoses.length > 3 ? 3 : missedDoses.length,
-                              separatorBuilder: (context, index) => const SizedBox(height: 12),
-                              itemBuilder: (context, index) {
-                                final dose = missedDoses[index];
-                                return MissedDoseTile(
-                                  medicineName: dose.medicineName,
-                                  dateTime: DateFormat('MMM d, h:mm a').format(dose.scheduledTime),
-                                );
-                              },
+                              ],
                             ),
-                        ],
-                      ),
-                    ),
+                            const SizedBox(height: 16),
 
-                    // ── Export Actions ────────────────────────────
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Column(
-                        children: [
-                          // PDF export
-                          SizedBox(
-                            width: double.infinity,
-                            height: 56,
-                            child: ElevatedButton.icon(
-                              onPressed: () {
-                                // TODO: export PDF
-                              },
-                              icon: const Icon(
-                                Icons.picture_as_pdf,
-                                color: AppColors.white,
-                              ),
-                              label: const Text("Export as PDF Report"),
+                            // Stat cards
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: AdherenceStatCard(
+                                    label: "Adherence Rate",
+                                    value:
+                                        "${report.overallAdherencePercentage.toInt()}%",
+                                    trendText: "Overall adherence",
+                                    trendUp: report.overallAdherencePercentage >= 80,
+                                    isPrimary: true,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: AdherenceStatCard(
+                                    label: "Doses Taken",
+                                    value:
+                                        "${report.totalTaken}/${report.totalScheduled}",
+                                    trendText: "${report.totalMissed} missed",
+                                    trendUp: report.totalMissed == 0,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                          const SizedBox(height: 16),
-
-                          // Email + Share
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _ExportActionTile(
-                                  icon: Icons.mail_outline,
-                                  label: "Email Doctor",
-                                  onTap: () {
-                                    // TODO: email
-                                  },
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: _ExportActionTile(
-                                  icon: Icons.link,
-                                  label: "Share Link",
-                                  onTap: () {
-                                    // TODO: share
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
 
-                    const SizedBox(height: 40),
-                  ],
-                ),
-              );
-            }
+                      // ── Weekly Progress Chart ────────────────────
+                      Padding(
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: WeeklyProgressChart(
+                          weeklyValues: report.dailyBreakdown.map((e) {
+                            final total = e.taken + e.missed;
+                            return total > 0 ? e.taken / total : 0.0;
+                          }).toList(),
+                          currentStreak: _calculateStreak(report.dailyBreakdown),
+                        ),
+                      ),
 
-            return const SizedBox();
-          },
-        ),
+                      // ── Recent Missed Doses ──────────────────────
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  "Recent Missed Doses",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                if (missedDoses.isNotEmpty)
+                                  GestureDetector(
+                                    onTap: () {
+                                      // TODO: view all missed doses
+                                    },
+                                    child: const Text(
+                                      "View All",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.primary,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            if (missedDoses.isEmpty)
+                              const Center(
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 20),
+                                  child: Text("No missed doses! Keep it up."),
+                                ),
+                              )
+                            else
+                              ListView.separated(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount:
+                                    missedDoses.length > 3 ? 3 : missedDoses.length,
+                                separatorBuilder: (context, index) =>
+                                    const SizedBox(height: 12),
+                                itemBuilder: (context, index) {
+                                  final dose = missedDoses[index];
+                                  return MissedDoseTile(
+                                    medicineName: dose.medicineName,
+                                    dateTime: DateFormat('MMM d, h:mm a')
+                                        .format(dose.scheduledTime),
+                                  );
+                                },
+                              ),
+                          ],
+                        ),
+                      ),
+
+                      // ── Export Actions ────────────────────────────
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          children: [
+                            // PDF export
+                            SizedBox(
+                              width: double.infinity,
+                              height: 56,
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  // TODO: export PDF
+                                },
+                                icon: const Icon(
+                                  Icons.picture_as_pdf,
+                                  color: AppColors.white,
+                                ),
+                                label: const Text("Export as PDF Report"),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Email + Share
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _ExportActionTile(
+                                    icon: Icons.mail_outline,
+                                    label: "Email Doctor",
+                                    onTap: () {
+                                      // TODO: email
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: _ExportActionTile(
+                                    icon: Icons.link,
+                                    label: "Share Link",
+                                    onTap: () {
+                                      // TODO: share
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 40),
+                    ],
+                  ),
+                );
+              }
+
+              return const SizedBox();
+            },
+          ),
+        );
+      }),
+    );
+  }
+
+  void _showPeriodPicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
+      builder: (bottomSheetContext) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  "Select Report Period",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.today),
+                title: const Text("Daily"),
+                onTap: () {
+                  context
+                      .read<ReportsBloc>()
+                      .add(const LoadReportsEvent(period: 'daily'));
+                  Navigator.pop(bottomSheetContext);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.calendar_view_week),
+                title: const Text("Weekly"),
+                onTap: () {
+                  context
+                      .read<ReportsBloc>()
+                      .add(const LoadReportsEvent(period: 'weekly'));
+                  Navigator.pop(bottomSheetContext);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.calendar_month),
+                title: const Text("Monthly"),
+                onTap: () {
+                  context
+                      .read<ReportsBloc>()
+                      .add(const LoadReportsEvent(period: 'monthly'));
+                  Navigator.pop(bottomSheetContext);
+                },
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        );
+      },
     );
   }
 

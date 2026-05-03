@@ -30,29 +30,31 @@ class WeeklyProgressChart extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Weekly Progress",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.slate500,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      weeklyValues.length <= 7 ? "Weekly Progress" : "Monthly Progress",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.slate500,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "Current Streak: $currentStreak days",
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
+                    const SizedBox(height: 4),
+                    Text(
+                      "Streak: $currentStreak days",
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               Text(
-                "Past ${weeklyValues.length} Weeks",
+                "Past ${weeklyValues.length} Days",
                 style: TextStyle(
                   fontSize: 12,
                   color: AppColors.slate400,
@@ -65,56 +67,62 @@ class WeeklyProgressChart extends StatelessWidget {
           // Bar chart
           SizedBox(
             height: 128,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                for (int i = 0; i < weeklyValues.length; i++) ...[
-                  if (i > 0) const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Expanded(
-                          child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color:
-                                  AppColors.primary.withValues(alpha: 0.15),
-                              borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(4),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  for (int i = 0; i < weeklyValues.length; i++) ...[
+                    if (i > 0) SizedBox(width: weeklyValues.length > 7 ? 8 : 12),
+                    SizedBox(
+                      width: weeklyValues.length > 7 ? 32 : 40,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color:
+                                    AppColors.primary.withValues(alpha: 0.15),
+                                borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(4),
+                                ),
                               ),
-                            ),
-                            child: Align(
-                              alignment: Alignment.bottomCenter,
-                              child: FractionallySizedBox(
-                                heightFactor: weeklyValues[i].clamp(0, 1),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: AppColors.primary,
-                                    borderRadius:
-                                        const BorderRadius.vertical(
-                                      top: Radius.circular(4),
+                              child: Align(
+                                alignment: Alignment.bottomCenter,
+                                child: FractionallySizedBox(
+                                  heightFactor: weeklyValues[i].clamp(0, 1),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primary,
+                                      borderRadius:
+                                          const BorderRadius.vertical(
+                                        top: Radius.circular(4),
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          "W${i + 1}",
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.slate400,
+                          const SizedBox(height: 8),
+                          Text(
+                            weeklyValues.length <= 7 
+                                ? "Day ${i + 1}"
+                                : "${i + 1}",
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.slate400,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ],
