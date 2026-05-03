@@ -11,6 +11,7 @@ import '../../../features/medicine/presentation/pages/add_medicine_page.dart';
 import '../../../features/medicine/presentation/pages/medicine_list_page.dart';
 import '../../../features/profile/presentation/pages/profile_page.dart';
 import '../../../features/reminder/presentation/pages/reminder_page.dart';
+import '../../../features/reports/presentation/pages/missed_doses_page.dart';
 import '../../../features/reports/presentation/pages/reports_page.dart';
 import '../../../features/settings/presentation/pages/settings_page.dart';
 import '../../../shared/widgets/organisms/main_wrapper.dart';
@@ -71,6 +72,16 @@ class AppRouter {
                 path: AppPage.reports.toPath,
                 name: AppPage.reports.toName,
                 builder: (context, state) => const ReportsPage(),
+                routes: [
+                  GoRoute(
+                    path: AppPage.missedDoses.toPath,
+                    name: AppPage.missedDoses.toName,
+                    builder: (context, state) {
+                      final missedDoses = state.extra as List<dynamic>?;
+                      return MissedDosesPage(missedDoses: missedDoses ?? []);
+                    },
+                  ),
+                ],
               ),
             ],
           ),

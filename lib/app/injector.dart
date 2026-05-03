@@ -29,6 +29,7 @@ import 'features/medicine/presentation/bloc/medicine_bloc.dart';
 import 'features/reports/data/datasources/report_api_service.dart';
 import 'features/reports/data/repositories/report_repository_impl.dart';
 import 'features/reports/domain/repositories/report_repository.dart';
+import 'features/reports/domain/services/report_export_service.dart';
 import 'features/reports/domain/usecases/get_reports_usecase.dart';
 import 'features/reports/presentation/bloc/reports_bloc.dart';
 
@@ -111,6 +112,9 @@ void _registerServices() {
     )
     ..registerLazySingleton<ReportApiService>(
       () => ReportApiServiceImpl(inject<DioService>()),
+    )
+    ..registerLazySingleton<ReportExportService>(
+      () => ReportExportService(),
     );
 }
 

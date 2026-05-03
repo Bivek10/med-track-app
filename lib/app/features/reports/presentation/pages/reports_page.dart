@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/config/routes/route_path.dart';
 import '../../../../core/config/theme/app_colors.dart';
 import '../../../../injector.dart';
+import '../../domain/services/report_export_service.dart';
 import '../bloc/reports_bloc.dart';
 import '../bloc/reports_event.dart';
 import '../bloc/reports_state.dart';
@@ -174,7 +177,10 @@ class _ReportsPageState extends State<ReportsPage> {
                                 if (missedDoses.isNotEmpty)
                                   GestureDetector(
                                     onTap: () {
-                                      // TODO: view all missed doses
+                                      context.pushNamed(
+                                        AppPage.missedDoses.toName,
+                                        extra: missedDoses,
+                                      );
                                     },
                                     child: const Text(
                                       "View All",
@@ -227,7 +233,10 @@ class _ReportsPageState extends State<ReportsPage> {
                               height: 56,
                               child: ElevatedButton.icon(
                                 onPressed: () {
-                                  // TODO: export PDF
+                                  inject<ReportExportService>().exportAndShareReport(
+                                    adherenceReport: report,
+                                    missedDoses: missedDoses,
+                                  );
                                 },
                                 icon: const Icon(
                                   Icons.picture_as_pdf,
@@ -246,17 +255,20 @@ class _ReportsPageState extends State<ReportsPage> {
                                     icon: Icons.mail_outline,
                                     label: "Email Doctor",
                                     onTap: () {
-                                      // TODO: email
+                                      inject<ReportExportService>().exportAndShareReport(
+                                        adherenceReport: report,
+                                        missedDoses: missedDoses,
+                                      );
                                     },
                                   ),
                                 ),
                                 const SizedBox(width: 16),
                                 Expanded(
                                   child: _ExportActionTile(
-                                    icon: Icons.link,
-                                    label: "Share Link",
+                                    icon: Icons.share,
+                                    label: "Share Stats",
                                     onTap: () {
-                                      // TODO: share
+                                      inject<ReportExportService>().shareTextReport(report);
                                     },
                                   ),
                                 ),
