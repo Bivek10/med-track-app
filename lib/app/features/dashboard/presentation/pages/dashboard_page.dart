@@ -196,8 +196,11 @@ class _DashboardPageState extends State<DashboardPage> {
               width: double.infinity,
               height: 72,
               child: OutlinedButton.icon(
-                onPressed: () {
-                  context.pushNamed(AppPage.addMedicine.toName);
+                onPressed: () async {
+                  final result = await context.pushNamed(AppPage.addMedicine.toName);
+                  if (result == true) {
+                    _dashboardBloc.add(LoadDashboardData());
+                  }
                 },
                 icon: Icon(
                   Icons.add_circle_outline,

@@ -8,6 +8,8 @@ import '../../../../core/config/routes/route_path.dart';
 import '../../../../core/config/theme/app_colors.dart';
 import '../../../../injector.dart';
 import '../../domain/entities/medicine_entity.dart';
+import '../../../dashboard/presentation/bloc/dashboard_bloc.dart';
+import '../../../dashboard/presentation/bloc/dashboard_event.dart';
 import '../bloc/medicine_bloc.dart';
 
 class MedicineListPage extends StatefulWidget {
@@ -95,6 +97,7 @@ class _MedicineListPageState extends State<MedicineListPage> {
                     backgroundColor: Colors.green,
                   ),
                 );
+                inject<DashboardBloc>().add(LoadDashboardData());
               } else if (state is MedicineFailure) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -201,6 +204,7 @@ class _MedicineListPageState extends State<MedicineListPage> {
             final result = await context.pushNamed(AppPage.addMedicine.toName);
             if (result == true) {
               _medicineBloc.add(const FetchMedicines(refresh: true));
+              inject<DashboardBloc>().add(LoadDashboardData());
             }
           },
           backgroundColor: AppColors.primary,
@@ -327,6 +331,7 @@ class _MedicineListPageState extends State<MedicineListPage> {
                     );
                     if (result == true) {
                       _medicineBloc.add(const FetchMedicines(refresh: true));
+                      inject<DashboardBloc>().add(LoadDashboardData());
                     }
                   } else if (value == 'delete') {
                     _showDeleteConfirmation(context, medicine);

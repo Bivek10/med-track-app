@@ -53,7 +53,7 @@ void _registerBloc() {
   inject
       .registerFactory<MedicineBloc>(() => MedicineBloc(inject<MedicineUsecase>()));
   inject
-      .registerFactory<DashboardBloc>(() => DashboardBloc(inject<DashboardUsecase>()));
+      .registerLazySingleton<DashboardBloc>(() => DashboardBloc(inject<DashboardUsecase>()));
 }
 
 void _registerAppTheme() {
