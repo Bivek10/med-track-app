@@ -26,6 +26,11 @@ import 'features/medicine/data/repository/medicine_repository_impl.dart';
 import 'features/medicine/domain/repository/medicine_repository.dart';
 import 'features/medicine/domain/usecases/medicine_usecase.dart';
 import 'features/medicine/presentation/bloc/medicine_bloc.dart';
+import 'features/reports/data/datasources/report_api_service.dart';
+import 'features/reports/data/repositories/report_repository_impl.dart';
+import 'features/reports/domain/repositories/report_repository.dart';
+import 'features/reports/domain/usecases/get_reports_usecase.dart';
+import 'features/reports/presentation/bloc/reports_bloc.dart';
 
 late SharedPreferences preferences;
 final inject = GetIt.instance;
@@ -54,6 +59,8 @@ void _registerBloc() {
       .registerFactory<MedicineBloc>(() => MedicineBloc(inject<MedicineUsecase>()));
   inject
       .registerLazySingleton<DashboardBloc>(() => DashboardBloc(inject<DashboardUsecase>()));
+  inject
+      .registerFactory<ReportsBloc>(() => ReportsBloc(inject<GetReportsUseCase>()));
 }
 
 void _registerAppTheme() {
@@ -101,6 +108,9 @@ void _registerServices() {
     )
     ..registerLazySingleton<DashboardApiService>(
       () => DashboardApiServiceImpl(inject<DioService>()),
+    )
+    ..registerLazySingleton<ReportApiService>(
+      () => ReportApiServiceImpl(inject<DioService>()),
     );
 }
 
@@ -114,6 +124,9 @@ void _registerRepository() {
   inject.registerLazySingleton<DashboardRepository>(
     () => DashboardRepositoryImpl(inject<DashboardApiService>()),
   );
+  inject.registerLazySingleton<ReportRepository>(
+    () => ReportRepositoryImpl(inject<ReportApiService>()),
+  );
 }
 
 void _registerUseCases() {
@@ -126,6 +139,9 @@ void _registerUseCases() {
     )
     ..registerLazySingleton<DashboardUsecase>(
       () => DashboardUsecase(inject<DashboardRepository>()),
+    )
+    ..registerLazySingleton<GetReportsUseCase>(
+      () => GetReportsUseCase(inject<ReportRepository>()),
     );
 }
 

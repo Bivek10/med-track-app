@@ -7,6 +7,7 @@ class ApiEndpoints {
   static const String todayIntakes = '/intakes/today';
   static const String intakeStatus = '/intakes/{id}/status';
   static const String medicines = '/medicines';
-static const String adherence = '/reports/adherence';
+  static const String adherence = '/reports/adherence';
+  static const String missedDoses = '/reports/missed-doses';
   static const String getPosts = '/posts';
 }
