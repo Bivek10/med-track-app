@@ -31,11 +31,6 @@ dependencies:
   gsheets: ^0.5.0
   firebase_core: ^3.11.0
   firebase_messaging: ^15.3.0
-  flutter_local_notifications: ^18.0.1
-  firebase_push_notification_module:
-    git:
-      url: https://github.com/Aashish-Dahal/fcm_module.git
-      ref: develop
   intl: ^0.20.2
   pdf: ^3.11.1
   printing: ^5.13.2
