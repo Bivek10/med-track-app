@@ -89,8 +89,14 @@ class _DashboardPageState extends State<DashboardPage> {
           }
 
           if (state is DashboardLoaded) {
-            return SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+            return RefreshIndicator(
+              onRefresh: () async {
+                context.read<DashboardBloc>().add(LoadDashboardData());
+                await context.read<DashboardBloc>().stream.firstWhere((s) => s is! DashboardLoading);
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -223,7 +229,8 @@ class _DashboardPageState extends State<DashboardPage> {
             const SizedBox(height: 40),
           ],
         ),
-      );
+              ),
+            );
     }
 
     return const SizedBox();
