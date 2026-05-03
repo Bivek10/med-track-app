@@ -4,7 +4,8 @@ class ApiEndpoints {
   static const String profile = '/auth/profile';
   static const String updateProfile = '/users/profile';
   static const String refreshToken = '/auth/refresh';
+  static const String todayIntakes = '/intakes/today';
   static const String medicines = '/medicines';
-
+static const String adherence = '/reports/adherence';
   static const String getPosts = '/posts';
 }

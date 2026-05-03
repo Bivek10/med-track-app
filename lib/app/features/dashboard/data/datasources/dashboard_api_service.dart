@@ -21,7 +21,7 @@ class DashboardApiServiceImpl implements DashboardApiService {
   Future<Either<Failure, ApiResponse<IntakeListResponseModel>>> getTodaysIntakes() async {
     return _dioService.makeRequest<IntakeListResponseModel, JsonMap>(
       type: RequestType.get,
-      endpoint: '/api/v1/intakes/today',
+      endpoint: ApiEndpoints.todayIntakes,
       fromJson: (json) {
         final data = json['data'];
         return IntakeListResponseModel.fromJson(data is JsonMap ? data : json);
@@ -33,7 +33,10 @@ class DashboardApiServiceImpl implements DashboardApiService {
   Future<Either<Failure, ApiResponse<AdherenceModel>>> getAdherence() async {
     return _dioService.makeRequest<AdherenceModel, JsonMap>(
       type: RequestType.get,
-      endpoint: '/api/v1/reports/adherence?period=daily',
+      endpoint: ApiEndpoints.adherence,
+      queryParameters: {
+        "period":'daily',
+      },
       fromJson: (json) {
         final data = json['data'];
         return AdherenceModel.fromJson(data is JsonMap ? data : json);

@@ -11,13 +11,26 @@ import '../bloc/dashboard_state.dart';
 import '../widgets/adherence_card.dart';
 import '../widgets/medicine_card.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
 
   @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  late DashboardBloc _dashboardBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _dashboardBloc = inject<DashboardBloc>()..add(LoadDashboardData());
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => inject<DashboardBloc>()..add(LoadDashboardData()),
+    return BlocProvider.value(
+      value: _dashboardBloc,
       child: Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
