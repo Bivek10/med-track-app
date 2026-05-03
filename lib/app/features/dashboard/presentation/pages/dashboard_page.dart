@@ -92,7 +92,11 @@ class _DashboardPageState extends State<DashboardPage> {
             return RefreshIndicator(
               onRefresh: () async {
                 context.read<DashboardBloc>().add(LoadDashboardData());
-                await context.read<DashboardBloc>().stream.firstWhere((s) => s is! DashboardLoading);
+                await context
+                    .read<DashboardBloc>()
+                    .stream
+                    .firstWhere((s) => s is! DashboardLoading)
+                    .timeout(const Duration(seconds: 5), onTimeout: () => state);
               },
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),

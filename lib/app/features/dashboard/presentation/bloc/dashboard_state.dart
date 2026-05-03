@@ -17,14 +17,16 @@ class DashboardLoading extends DashboardState {}
 class DashboardLoaded extends DashboardState {
   final List<IntakeEntity> intakes;
   final AdherenceEntity adherence;
+  final DateTime lastUpdated;
 
-  const DashboardLoaded({
+  DashboardLoaded({
     required this.intakes,
     required this.adherence,
-  });
+    DateTime? lastUpdated,
+  }) : lastUpdated = lastUpdated ?? DateTime.now();
 
   @override
-  List<Object?> get props => [intakes, adherence];
+  List<Object?> get props => [intakes, adherence, lastUpdated];
 }
 
 class DashboardError extends DashboardState {
