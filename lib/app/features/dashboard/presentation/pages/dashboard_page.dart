@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/config/routes/route_path.dart';
 import '../../../../core/config/theme/app_colors.dart';
+import '../../../../injector.dart';
+import '../bloc/dashboard_bloc.dart';
+import '../bloc/dashboard_event.dart';
+import '../bloc/dashboard_state.dart';
 import '../widgets/adherence_card.dart';
 import '../widgets/medicine_card.dart';
 
@@ -11,7 +16,9 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocProvider(
+      create: (context) => inject<DashboardBloc>()..add(LoadDashboardData()),
+      child: Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Row(
@@ -41,21 +48,49 @@ class DashboardPage extends StatelessWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ── Adherence Card ──────────────────────────────
-            const AdherenceCard(
-              takenCount: 3,
-              totalCount: 4,
-              message: "You're doing great! Only 1 pill left for today.",
-            ),
+      body: BlocBuilder<DashboardBloc, DashboardState>(
+        builder: (context, state) {
+          if (state is DashboardLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-            const SizedBox(height: 32),
+          if (state is DashboardError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Failed to load dashboard',
+                    style: TextStyle(color: AppColors.slate600, fontSize: 16),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      context.read<DashboardBloc>().add(LoadDashboardData());
+                    },
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
+          }
 
-            // ── Today's Schedule Header ─────────────────────
+          if (state is DashboardLoaded) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ── Adherence Card ──────────────────────────────
+                  AdherenceCard(
+                    takenCount: state.adherence.takenCount,
+                    totalCount: state.adherence.totalCount,
+                    message: state.adherence.message,
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // ── Today's Schedule Header ─────────────────────
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -79,49 +114,63 @@ class DashboardPage extends StatelessWidget {
 
             const SizedBox(height: 16),
 
+            const SizedBox(height: 16),
+
             // ── Medicine Cards ──────────────────────────────
-            const MedicineCard(
-              time: "08:00 AM",
-              name: "Aspirin",
-              dosage: "100mg",
-              instruction: "After Meal",
-              status: MedicineStatus.taken,
-            ),
+            if (state.intakes.isEmpty)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(32.0),
+                  child: Text(
+                    "No medicines scheduled for today.",
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                ),
+              )
+            else
+              ...state.intakes.map((intake) {
+                MedicineStatus status;
+                switch (intake.status.toLowerCase()) {
+                  case 'taken':
+                    status = MedicineStatus.taken;
+                    break;
+                  case 'missed':
+                    status = MedicineStatus.missed;
+                    break;
+                  case 'pending':
+                  case 'snoozed':
+                  default:
+                    status = MedicineStatus.upcoming; // Simplification, could use 'later' based on time
+                    break;
+                }
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: MedicineCard(
+                    time: intake.time,
+                    name: intake.medicineName,
+                    dosage: intake.dosage,
+                    instruction: intake.instruction ?? 'No instruction',
+                    status: status,
+                    onTake: status == MedicineStatus.upcoming
+                        ? () {
+                            context
+                                .read<DashboardBloc>()
+                                .add(UpdateIntakeStatusEvent(id: intake.id, status: 'taken'));
+                          }
+                        : null,
+                    onSkip: status == MedicineStatus.upcoming
+                        ? () {
+                            context
+                                .read<DashboardBloc>()
+                                .add(UpdateIntakeStatusEvent(id: intake.id, status: 'missed'));
+                          }
+                        : null,
+                  ),
+                );
+              }),
+
             const SizedBox(height: 16),
-
-            const MedicineCard(
-              time: "12:30 PM",
-              name: "Metformin",
-              dosage: "500mg",
-              instruction: "With Meal",
-              status: MedicineStatus.missed,
-            ),
-            const SizedBox(height: 16),
-
-            MedicineCard(
-              time: "06:00 PM",
-              name: "Lisinopril",
-              dosage: "10mg",
-              instruction: "Before Meal",
-              status: MedicineStatus.upcoming,
-              onTake: () {
-                // TODO: mark as taken
-              },
-              onSkip: () {
-                // TODO: skip dose
-              },
-            ),
-            const SizedBox(height: 16),
-
-            const MedicineCard(
-              time: "10:00 PM",
-              name: "Atorvastatin",
-              dosage: "20mg",
-              instruction: "Before Bed",
-              status: MedicineStatus.later,
-            ),
-
-            const SizedBox(height: 32),
 
             // ── Add New Medicine Button ─────────────────────
             SizedBox(
@@ -161,6 +210,12 @@ class DashboardPage extends StatelessWidget {
             const SizedBox(height: 40),
           ],
         ),
+      );
+    }
+
+    return const SizedBox();
+  },
+),
       ),
     );
   }

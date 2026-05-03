@@ -16,12 +16,16 @@ import 'features/auth/data/repository/auth_repository_impl.dart';
 import 'features/auth/domain/repository/auth_repository.dart';
 import 'features/auth/domain/usecases/auth_usecase.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/dashboard/data/datasources/dashboard_api_service.dart';
+import 'features/dashboard/data/repository/dashboard_repository_impl.dart';
+import 'features/dashboard/domain/repository/dashboard_repository.dart';
+import 'features/dashboard/domain/usecases/dashboard_usecase.dart';
+import 'features/dashboard/presentation/bloc/dashboard_bloc.dart';
 import 'features/medicine/data/datasources/medicine_api_service.dart';
 import 'features/medicine/data/repository/medicine_repository_impl.dart';
 import 'features/medicine/domain/repository/medicine_repository.dart';
 import 'features/medicine/domain/usecases/medicine_usecase.dart';
 import 'features/medicine/presentation/bloc/medicine_bloc.dart';
-
 
 late SharedPreferences preferences;
 final inject = GetIt.instance;
@@ -48,6 +52,8 @@ void _registerBloc() {
   inject.registerLazySingleton<AuthBloc>(() => AuthBloc(inject<AuthUsecase>()));
   inject
       .registerFactory<MedicineBloc>(() => MedicineBloc(inject<MedicineUsecase>()));
+  inject
+      .registerFactory<DashboardBloc>(() => DashboardBloc(inject<DashboardUsecase>()));
 }
 
 void _registerAppTheme() {
@@ -92,6 +98,9 @@ void _registerServices() {
     )
     ..registerLazySingleton<MedicineApiService>(
       () => MedicineApiServiceImpl(inject<DioService>()),
+    )
+    ..registerLazySingleton<DashboardApiService>(
+      () => DashboardApiServiceImpl(inject<DioService>()),
     );
 }
 
@@ -102,6 +111,9 @@ void _registerRepository() {
   inject.registerLazySingleton<MedicineRepository>(
     () => MedicineRepositoryImpl(inject<MedicineApiService>()),
   );
+  inject.registerLazySingleton<DashboardRepository>(
+    () => DashboardRepositoryImpl(inject<DashboardApiService>()),
+  );
 }
 
 void _registerUseCases() {
@@ -111,6 +123,9 @@ void _registerUseCases() {
     )
     ..registerLazySingleton<MedicineUsecase>(
       () => MedicineUsecase(inject<MedicineRepository>()),
+    )
+    ..registerLazySingleton<DashboardUsecase>(
+      () => DashboardUsecase(inject<DashboardRepository>()),
     );
 }
 

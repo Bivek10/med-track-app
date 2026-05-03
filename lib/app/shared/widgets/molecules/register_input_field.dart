@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 import '../../../core/config/theme/app_colors.dart';
-import '../../../core/utils/extension/common_extension.dart';
+import '../../../core/utils/extension/context_extension/theme_extension.dart';
 import '../../../core/validators/auth_validator.dart';
 import '../atoms/input_field.dart';
 
@@ -61,12 +61,12 @@ class RegisterInputField extends StatelessWidget with AuthValidator {
                 ),
               ),
               contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             ),
             items: ['male', 'female', 'other']
                 .map((gender) => DropdownMenuItem(
                       value: gender,
-                      child: Text(gender.toUpperCase()),
+                      child: Text(gender.toUpperCase(), style: context.bodySmall,),
                     ))
                 .toList(),
           ),
