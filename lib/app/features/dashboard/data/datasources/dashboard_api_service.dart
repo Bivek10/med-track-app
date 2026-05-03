@@ -53,7 +53,7 @@ class DashboardApiServiceImpl implements DashboardApiService {
   Future<Either<Failure, ApiResponse<void>>> updateIntakeStatus(int id, String status) async {
     return _dioService.makeRequest<void, JsonMap>(
       type: RequestType.put,
-      endpoint: '/api/v1/intakes/$id/status',
+      endpoint: ApiEndpoints.intakeStatus.replaceFirst('{id}', id.toString()) ,
       data: {
         'status': status,
       },
