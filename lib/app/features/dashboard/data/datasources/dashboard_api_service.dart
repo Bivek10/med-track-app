@@ -19,12 +19,17 @@ class DashboardApiServiceImpl implements DashboardApiService {
 
   @override
   Future<Either<Failure, ApiResponse<IntakeListResponseModel>>> getTodaysIntakes() async {
-    return _dioService.makeRequest<IntakeListResponseModel, JsonMap>(
+    return _dioService.makeRequest<IntakeListResponseModel, dynamic>(
       type: RequestType.get,
       endpoint: ApiEndpoints.todayIntakes,
       fromJson: (json) {
-        final data = json['data'];
-        return IntakeListResponseModel.fromJson(data is JsonMap ? data : json);
+        if (json is List) {
+          return IntakeListResponseModel(
+            intakes: json.map((e) => IntakeModel.fromJson(e as JsonMap)).toList(),
+          );
+        }
+        final data = (json as JsonMap)['data'];
+        return IntakeListResponseModel.fromJson(data is JsonMap ? data : json as JsonMap);
       },
     );
   }

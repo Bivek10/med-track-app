@@ -23,10 +23,10 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     final adherenceResult = await _usecase.getAdherence();
 
     intakesResult.fold(
-      (failure) => emit(DashboardError(message: "Failed to load today's intakes")),
+      (failure) => emit(DashboardError(message: failure.message)),
       (intakes) {
         adherenceResult.fold(
-          (failure) => emit(DashboardError(message:"Failed to load adherence data")),
+          (failure) => emit(DashboardError(message: failure.message)),
           (adherence) {
             emit(DashboardLoaded(intakes: intakes, adherence: adherence));
           },

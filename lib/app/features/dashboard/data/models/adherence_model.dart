@@ -15,10 +15,21 @@ class AdherenceModel {
   factory AdherenceModel.fromJson(JsonMap json) {
     final data = json['data'] != null ? json['data'] as Map<String, dynamic> : json;
     
+    final taken = data['totalTaken'] as int? ?? 0;
+    final scheduled = data['totalScheduled'] as int? ?? 0;
+    
+    String msg = "You're doing great!";
+    if (scheduled > 0) {
+      final left = scheduled - taken;
+      msg = left > 0 ? "Only $left pill${left > 1 ? 's' : ''} left for today." : "All done for today!";
+    } else {
+      msg = "No medicines scheduled for today.";
+    }
+
     return AdherenceModel(
-      takenCount: data['takenCount'] as int? ?? 0,
-      totalCount: data['totalCount'] as int? ?? 0,
-      message: data['message'] as String? ?? "No data",
+      takenCount: taken,
+      totalCount: scheduled,
+      message: data['message'] as String? ?? msg,
     );
   }
 
