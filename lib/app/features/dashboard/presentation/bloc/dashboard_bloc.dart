@@ -17,7 +17,9 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     LoadDashboardData event,
     Emitter<DashboardState> emit,
   ) async {
-    emit(DashboardLoading());
+    if (state is! DashboardLoaded) {
+      emit(DashboardLoading());
+    }
 
     final intakesResult = await _usecase.getTodaysIntakes();
     final adherenceResult = await _usecase.getAdherence();
