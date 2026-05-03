@@ -114,14 +114,16 @@ class FirebaseNotificationService extends BaseNotificationService {
   /// This method sets up the initialization settings for Android and iOS
   /// and associates the notification tap callback.
   Future<void> _configureLocalNotifications() async {
-    AndroidInitializationSettings androidSettings = AndroidInitializationSettings(defaultIcon);
-    final DarwinInitializationSettings iosSettings = DarwinInitializationSettings();
+    AndroidInitializationSettings androidSettings =
+        AndroidInitializationSettings(defaultIcon);
+    final DarwinInitializationSettings iosSettings =
+        DarwinInitializationSettings();
     final InitializationSettings initSettings = InitializationSettings(
       android: androidSettings,
       iOS: iosSettings,
     );
     _flutterLocalNotificationsPlugin.initialize(
-      initSettings,
+      settings: initSettings,
       onDidReceiveNotificationResponse: onLocalNotificationTab,
     );
   }
@@ -164,7 +166,8 @@ class FirebaseNotificationService extends BaseNotificationService {
 
         final String? channelId = message.notification?.android?.channelId;
         final String? channelName = message.notification?.android?.channelId;
-        final String? description = message.data['channelDescription'] as String?;
+        final String? description =
+            message.data['channelDescription'] as String?;
 
         if (channelId != null && channelName != null && description != null) {
           createNotificationChannel(channelId, channelName, description);
@@ -206,7 +209,8 @@ class FirebaseNotificationService extends BaseNotificationService {
     AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
       channelId ?? message.notification?.android?.channelId ?? "channel_id",
       channelName ?? message.notification?.android?.channelId ?? "channel_name",
-      channelDescription: channelDescription ?? message.data['channelDescription'],
+      channelDescription:
+          channelDescription ?? message.data['channelDescription'],
       importance: Importance.max,
       priority: Priority.high,
       color: notificationColor,
@@ -220,10 +224,10 @@ class FirebaseNotificationService extends BaseNotificationService {
     final uniqueNotificationId = _generateUniqueNotificationId();
 
     await _flutterLocalNotificationsPlugin.show(
-      uniqueNotificationId,
-      message.notification?.title,
-      message.notification?.body,
-      details,
+      id: uniqueNotificationId,
+      title: message.notification?.title,
+      body: message.notification?.body,
+      notificationDetails: details,
       payload: jsonEncode({
         ...message.data,
         "channelId": message.notification?.android?.channelId ?? "channel_id",
@@ -238,25 +242,20 @@ class FirebaseNotificationService extends BaseNotificationService {
     String description,
   ) async {
     /// Define the Android Notification Channel details
-    final AndroidNotificationChannel androidChannel = AndroidNotificationChannel(
-      id,
-
-      /// channel ID (e.g., 'high_importance_channel')
-      name,
-
-      /// channel name (e.g., 'High Importance Notifications')
-      description: description,
-
-      /// channel description
-      importance: Importance.max,
-
-      /// Importance.max is equivalent to IMPORTANCE_HIGH
-      playSound: true,
-    );
+    final AndroidNotificationChannel androidChannel =
+        AndroidNotificationChannel(
+          id,
+          name,
+          description: description,
+          importance: Importance.max,
+          playSound: true,
+        );
 
     // Register the channel with the Android system
     await _flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.createNotificationChannel(androidChannel);
   }
 
