@@ -3,13 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-
 import '../../../../core/config/routes/route_path.dart';
 import '../../../../core/config/theme/app_colors.dart';
 import '../../../../injector.dart';
-import '../../domain/entities/medicine_entity.dart';
 import '../../../dashboard/presentation/bloc/dashboard_bloc.dart';
 import '../../../dashboard/presentation/bloc/dashboard_event.dart';
+import '../../domain/entities/medicine_entity.dart';
 import '../bloc/medicine_bloc.dart';
 
 class MedicineListPage extends StatefulWidget {
