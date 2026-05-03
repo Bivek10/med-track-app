@@ -15,6 +15,7 @@ abstract class AuthApiService {
     JsonMap body,
   );
   Future<Either<Failure, ApiResponse<JsonMap>>> updateDeviceToken(String token);
+  Future<Either<Failure, ApiResponse<JsonMap>>> removeDeviceToken();
 }
 
 class AuthApiServiceImpl implements AuthApiService {
@@ -96,6 +97,15 @@ class AuthApiServiceImpl implements AuthApiService {
       endpoint: ApiEndpoints.deviceToken,
       fromJson: (json) => json,
       data: {'token': token},
+    );
+  }
+
+  @override
+  Future<Either<Failure, ApiResponse<JsonMap>>> removeDeviceToken() async {
+    return _dioService.makeRequest<JsonMap, JsonMap>(
+      type: RequestType.delete,
+      endpoint: ApiEndpoints.deviceToken,
+      fromJson: (json) => json,
     );
   }
 }

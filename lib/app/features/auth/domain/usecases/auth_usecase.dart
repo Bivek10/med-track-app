@@ -34,4 +34,14 @@ class AuthUsecase {
   ) {
     return authRepository.refreshToken(userMap);
   }
+
+  Future<Either<Failure, ApiResponse<JsonMap>>> callUpdateDeviceToken(
+    String token,
+  ) {
+    return authRepository.updateDeviceToken(token);
+  }
+
+  Future<Either<Failure, ApiResponse<JsonMap>>> callRemoveDeviceToken() {
+    return authRepository.removeDeviceToken();
+  }
 }

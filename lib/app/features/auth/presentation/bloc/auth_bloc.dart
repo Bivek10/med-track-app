@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -77,6 +78,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _signOut(AuthSignOut event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
+    // Remove token from backend
+    await authUsecase.callRemoveDeviceToken();
+    // Clear token locally from Firebase
+    await FirebaseMessaging.instance.deleteToken();
+    // Clear local session storage
     await inject<FlutterSecureStorage>().deleteAll();
     emit(const Unauthenticated());
   }

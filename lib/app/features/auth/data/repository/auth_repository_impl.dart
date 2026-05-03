@@ -85,4 +85,9 @@ class AuthRepositoryImpl extends AuthRepository {
   ) {
     return _authApiService.updateDeviceToken(token);
   }
+
+  @override
+  Future<Either<Failure, ApiResponse<JsonMap>>> removeDeviceToken() {
+    return _authApiService.removeDeviceToken();
+  }
 }
